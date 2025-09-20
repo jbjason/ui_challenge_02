@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ui_challenge_02/constant/my_color.dart';
+import 'package:ui_challenge_02/constant/my_constant.dart';
+import 'package:ui_challenge_02/constant/my_dimens.dart';
 import 'package:ui_challenge_02/constant/my_image.dart';
+import 'package:ui_challenge_02/screens/cart_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -72,15 +75,39 @@ class HomeScreen extends StatelessWidget {
             left: 20,
             right: 20,
             top: size.height * .15,
-            height: size.height * .45,
-            child: Container(
-              constraints: BoxConstraints.expand(),
-              decoration: BoxDecoration(
-                color: MyColor.primaryColor,
-                borderRadius: BorderRadius.circular(17),
-                image: DecorationImage(
-                  image: AssetImage(MyImage.galaxyImg),
-                  fit: BoxFit.fitWidth,
+            bottom: size.height * .35,
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => CartScreen()),
+                );
+              },
+              child: Hero(
+                tag: Key("hero-tag12"),
+                child: Container(
+                  alignment: Alignment.bottomCenter,
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  decoration: BoxDecoration(
+                    color: MyColor.primaryColor,
+                    borderRadius: BorderRadius.circular(17),
+                    image: DecorationImage(
+                      image: AssetImage(MyImage.galaxyImg),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: List.generate(
+                        MyConstant.circularIconTitles.length,
+                        (i) => MyDimens().getCircularItem(
+                          MyConstant.circularIconTitles[i],
+                          MyConstant.circularIcons[i],
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),

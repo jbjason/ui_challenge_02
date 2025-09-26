@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ui_challenge_02/constant/media_extension.dart';
 import 'package:ui_challenge_02/constant/my_color.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
 import 'package:ui_challenge_02/constant/my_dimens.dart';
@@ -25,12 +26,12 @@ class _CartScreenState extends State<CartScreen>
   void _initialize() {
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 1500),
+      duration: Duration(milliseconds: 3000),
     );
     _blueBoxAnim =
-        CurvedAnimation(parent: _controller, curve: const Interval(.0, .4));
+        CurvedAnimation(parent: _controller, curve: const Interval(.1, .4));
     _lisItemAnim =
-        CurvedAnimation(parent: _controller, curve: const Interval(.3, .9,curve: Curves.bounceIn));
+        CurvedAnimation(parent: _lisItemAnim, curve: const Interval(.3, .9));
     _whiteCardAnim =
         CurvedAnimation(parent: _controller, curve: const Interval(.7, 1));
 
@@ -39,11 +40,11 @@ class _CartScreenState extends State<CartScreen>
     for (int i = 0; i < length; i++) {
       _listItemAnimationList.add(
         CurvedAnimation(
-          parent: _lisItemAnim,
+          parent: _controller,
           curve: Interval(
             i * intervalPerItem + .0, // starting interval
             (i + 1) * intervalPerItem + .0, // ending interval
-            curve: Curves.bounceIn,
+            // curve: Curves.bounceIn,
           ),
           // interval for 5 items  0 =(0,.2), 1=(.2,.4)......(.8,1)
         ),
@@ -55,57 +56,79 @@ class _CartScreenState extends State<CartScreen>
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final height = context.screenHeight;
     return Scaffold(
       body: Stack(
+        clipBehavior: Clip.none,
         children: [
           Positioned(
-            left: 40 * (1 - _blueBoxAnim.value),
-            right: 40 * (1 - _blueBoxAnim.value),
-            top: (size.height * .15) * (1 - _blueBoxAnim.value),
-            bottom: (size.height * .35) * (1 - _blueBoxAnim.value),
+            left: 20 * (1 - _blueBoxAnim.value),
+            right: 20 * (1 - _blueBoxAnim.value),
+            top: (height * .2) * (1 - _blueBoxAnim.value),
+            bottom: (height * .35) * (1 - _blueBoxAnim.value),
             child: Hero(
               tag: Key("hero-tag12"),
               child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  constraints: BoxConstraints.expand(),
-                  decoration: BoxDecoration(
-                    color: MyColor.primaryColor,
-                    borderRadius:
-                        BorderRadius.circular(17 * (1 - _blueBoxAnim.value)),
-                    image: DecorationImage(
-                      image: AssetImage(MyImage.galaxyImg),
-                      fit: BoxFit.fill,
-                    ),
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0 + (size.height * .8) * _lisItemAnim.value,
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: List.generate(
-                              MyConstant.circularIconTitles.length,
-                              (i) => MyDimens().getCircularItem(
-                                MyConstant.circularIconTitles[i],
-                                MyConstant.circularIcons[i],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )),
+                padding: EdgeInsets.symmetric(vertical: 20),
+                constraints: BoxConstraints.expand(),
+                decoration: BoxDecoration(
+                  color: MyColor.primaryColor,
+                  borderRadius:
+                      BorderRadius.circular(17 * (1 - _blueBoxAnim.value)),
+                ),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    ..._getCircularItems,
+                  ],
+                ),
+              ),
             ),
           ),
+
+          // white bottom containter
+          //  _getWhiteCard
         ],
       ),
     );
   }
 
+  List<Positioned> get _getCircularItems {
+    final items = <Positioned>[];
+    final bottomInitial = context.screenHeight * .35;
+    for (int i = 0; i < MyConstant.circularIcons.length; i++) {
+      final leftWidth =
+          (context.listItemWidth + (i == 0 ? 0.0 : context.listItemWidth / 4)) *
+              i;
+      final bottomVal = bottomInitial * (_blueBoxAnim.value) +
+          (context.screenHeight * .45) * _listItemAnimationList[i].value;
+      items.add(
+        Positioned(
+          bottom: bottomVal,
+          left: leftWidth,
+          child: MyDimens().getCircularItem(
+            itemWidth: context.listItemWidth,
+            title: MyConstant.circularIconTitles[i],
+            icon: MyConstant.circularIcons[i],
+          ),
+        ),
+      );
+    }
+    return items;
+  }
+
+  Positioned get _getWhiteCard => Positioned(
+        left: 0,
+        right: 0,
+        bottom: (-context.screenHeight * .8) * (1 - _whiteCardAnim.value),
+        height: context.screenHeight * .8,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+          ),
+        ),
+      );
   @override
   void dispose() {
     _controller.dispose();

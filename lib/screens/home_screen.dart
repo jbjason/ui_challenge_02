@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ui_challenge_02/constant/media_extension.dart';
 import 'package:ui_challenge_02/constant/my_color.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
 import 'package:ui_challenge_02/constant/my_dimens.dart';
@@ -10,7 +11,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     return Scaffold(
       body: Stack(
         children: [
@@ -30,8 +30,8 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const Spacer(),
                   SizedBox(
-                    height: size.height * .3,
-                    width: size.width,
+                    height: context.screenHeight * .25,
+                    width: context.screenWidth,
                     child: Column(
                       children: [
                         Row(
@@ -42,27 +42,28 @@ class HomeScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        SizedBox(
-                          height: size.height * .25,
-                          child: Row(children: [
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: Colors.purple[50],
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: Colors.purple[50],
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 20),
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: Colors.deepPurple[50],
+                              const SizedBox(width: 20),
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: Colors.deepPurple[50],
+                                  ),
                                 ),
                               ),
-                            ),
-                          ]),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -74,8 +75,8 @@ class HomeScreen extends StatelessWidget {
           Positioned(
             left: 20,
             right: 20,
-            top: size.height * .15,
-            bottom: size.height * .35,
+            top: context.screenHeight * .2,
+            bottom: context.screenHeight * .35,
             child: InkWell(
               onTap: () {
                 Navigator.push(
@@ -87,14 +88,24 @@ class HomeScreen extends StatelessWidget {
                 tag: Key("hero-tag12"),
                 child: Container(
                   alignment: Alignment.bottomCenter,
-                  padding: EdgeInsets.symmetric(vertical: 20),
+                  padding: EdgeInsets.only(top: 20, bottom: 20),
                   decoration: BoxDecoration(
                     color: MyColor.primaryColor,
                     borderRadius: BorderRadius.circular(17),
-                    image: DecorationImage(
-                      image: AssetImage(MyImage.galaxyImg),
-                      fit: BoxFit.fill,
-                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        //  color: Colors.deepPurple.shade300,
+                        color: MyColor.primaryColor.withOpacity(0.8),
+                        blurRadius: 50,
+                        spreadRadius: 2,
+                        offset: Offset(0, 15),
+                      ),
+                      BoxShadow(
+                        color: Colors.white,
+                        blurRadius: 50,
+                        offset: Offset(-10, -15),
+                      ),
+                    ],
                   ),
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -102,8 +113,9 @@ class HomeScreen extends StatelessWidget {
                       children: List.generate(
                         MyConstant.circularIconTitles.length,
                         (i) => MyDimens().getCircularItem(
-                          MyConstant.circularIconTitles[i],
-                          MyConstant.circularIcons[i],
+                          itemWidth: context.listItemWidth,
+                          title: MyConstant.circularIconTitles[i],
+                          icon: MyConstant.circularIcons[i],
                         ),
                       ),
                     ),

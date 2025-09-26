@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:ui_challenge_02/constant/my_color.dart';
 
 class MyDimens {
-  Widget getCircularItem(String title, IconData icon) {
+  Widget getCircularItem({
+    required double itemWidth,
+    required String title,
+    required IconData icon,
+  }) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20),
-      padding: EdgeInsets.all(20),
+      width: itemWidth,
+      padding: EdgeInsets.all(18),
+      margin: EdgeInsets.only(left: itemWidth / 4),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: MyColor.whiteColor,

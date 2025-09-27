@@ -107,18 +107,23 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: List.generate(
-                        MyConstant.circularIconTitles.length,
-                        (i) => MyDimens().getCircularItem(
-                          itemWidth: context.listItemWidth,
-                          title: MyConstant.circularIconTitles[i],
-                          icon: MyConstant.circularIcons[i],
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: List.generate(
+                            MyConstant.circularIconTitles.length,
+                            (i) => MyDimens().getCircularItem(
+                              itemWidth: context.listItemWidth,
+                              title: MyConstant.circularIconTitles[i],
+                              icon: MyConstant.circularIcons[i],
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ),

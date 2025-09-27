@@ -9,13 +9,27 @@ class MyDimens {
   }) {
     return Container(
       width: itemWidth,
-      padding: EdgeInsets.all(18),
       margin: EdgeInsets.only(left: itemWidth / 4),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: MyColor.whiteColor,
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: MyColor.whiteColor,
+            ),
+            child: Icon(icon),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            title,
+            style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: MyColor.whiteColor),
+          ),
+        ],
       ),
-      child: Icon(icon),
     );
   }
 }

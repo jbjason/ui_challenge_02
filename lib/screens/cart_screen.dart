@@ -26,25 +26,25 @@ class _CartScreenState extends State<CartScreen>
   void _initialize() {
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 3000),
+      duration: Duration(milliseconds: 1500),
     );
     _blueBoxAnim =
-        CurvedAnimation(parent: _controller, curve: const Interval(.1, .4));
+        CurvedAnimation(parent: _controller, curve: const Interval(.1, .5));
     _lisItemAnim =
-        CurvedAnimation(parent: _lisItemAnim, curve: const Interval(.3, .9));
+        CurvedAnimation(parent: _controller, curve: const Interval(.2, .8));
     _whiteCardAnim =
-        CurvedAnimation(parent: _controller, curve: const Interval(.7, 1));
+        CurvedAnimation(parent: _controller, curve: const Interval(.5, 1));
 
     final int length = MyConstant.circularIcons.length;
-    final intervalPerItem = (1 / length).toInt();
+    final intervalPerItem = 1 / length;
     for (int i = 0; i < length; i++) {
       _listItemAnimationList.add(
         CurvedAnimation(
-          parent: _controller,
+          parent: _lisItemAnim,
           curve: Interval(
             i * intervalPerItem + .0, // starting interval
             (i + 1) * intervalPerItem + .0, // ending interval
-            // curve: Curves.bounceIn,
+            curve: Curves.bounceIn,
           ),
           // interval for 5 items  0 =(0,.2), 1=(.2,.4)......(.8,1)
         ),
@@ -85,36 +85,58 @@ class _CartScreenState extends State<CartScreen>
               ),
             ),
           ),
-
           // white bottom containter
-          //  _getWhiteCard
+          _getWhiteCard
         ],
       ),
     );
   }
 
   List<Positioned> get _getCircularItems {
-    final items = <Positioned>[];
-    final bottomInitial = context.screenHeight * .35;
-    for (int i = 0; i < MyConstant.circularIcons.length; i++) {
-      final leftWidth =
-          (context.listItemWidth + (i == 0 ? 0.0 : context.listItemWidth / 4)) *
-              i;
-      final bottomVal = bottomInitial * (_blueBoxAnim.value) +
-          (context.screenHeight * .45) * _listItemAnimationList[i].value;
-      items.add(
-        Positioned(
-          bottom: bottomVal,
-          left: leftWidth,
-          child: MyDimens().getCircularItem(
-            itemWidth: context.listItemWidth,
-            title: MyConstant.circularIconTitles[i],
-            icon: MyConstant.circularIcons[i],
+    if (_controller.value < 1) {
+      final items = <Positioned>[];
+      final bottomInitial = context.screenHeight * .35;
+      for (int i = 0; i < MyConstant.circularIcons.length; i++) {
+        final leftWidth = (context.listItemWidth +
+                (i == 0 ? 0.0 : context.listItemWidth / 4)) *
+            i;
+        final bottomVal = bottomInitial * (_blueBoxAnim.value) +
+            (context.screenHeight * .45) * _listItemAnimationList[i].value;
+        items.add(
+          Positioned(
+            bottom: bottomVal,
+            left: leftWidth,
+            child: MyDimens().getCircularItem(
+              itemWidth: context.listItemWidth,
+              title: MyConstant.circularIconTitles[i],
+              icon: MyConstant.circularIcons[i],
+            ),
           ),
-        ),
-      );
+        );
+      }
+      return items;
+    } else {
+      return [
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: context.screenHeight * .8,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: List.generate(
+                MyConstant.circularIconTitles.length,
+                (i) => MyDimens().getCircularItem(
+                  itemWidth: context.listItemWidth,
+                  title: MyConstant.circularIconTitles[i],
+                  icon: MyConstant.circularIcons[i],
+                ),
+              ),
+            ),
+          ),
+        )
+      ];
     }
-    return items;
   }
 
   Positioned get _getWhiteCard => Positioned(
@@ -125,7 +147,7 @@ class _CartScreenState extends State<CartScreen>
         child: Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
           ),
         ),
       );

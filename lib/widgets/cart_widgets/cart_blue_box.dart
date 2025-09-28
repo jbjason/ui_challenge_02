@@ -1,0 +1,93 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/material.dart';
+import 'package:ui_challenge_02/constant/media_extension.dart';
+import 'package:ui_challenge_02/constant/my_color.dart';
+import 'package:ui_challenge_02/constant/my_constant.dart';
+import 'package:ui_challenge_02/constant/my_dimens.dart';
+
+class CartBlueBox extends StatelessWidget {
+  const CartBlueBox({
+    super.key,
+    required this.blueBoxAnim,
+    required this.listItemAnimationList,
+    required this.controller,
+  });
+  final AnimationController controller;
+  final Animation<double> blueBoxAnim;
+  final List<Animation<double>> listItemAnimationList;
+
+  @override
+  Widget build(BuildContext context) {
+    final height = context.screenHeight;
+    return Positioned(
+      left: 20 * (1 - blueBoxAnim.value),
+      right: 20 * (1 - blueBoxAnim.value),
+      top: (height * .2) * (1 - blueBoxAnim.value),
+      bottom: (height * .35) * (1 - blueBoxAnim.value),
+      child: Hero(
+        tag: Key("hero-tag12"),
+        child: Container(
+          padding: EdgeInsets.symmetric(vertical: 20),
+          constraints: BoxConstraints.expand(),
+          decoration: BoxDecoration(
+            color: MyColor.primaryColor,
+            borderRadius: BorderRadius.circular(17 * (1 - blueBoxAnim.value)),
+          ),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              ..._getCircularItems(context),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Positioned> _getCircularItems(BuildContext context) {
+    if (controller.value < 1) {
+      final items = <Positioned>[];
+      final bottomInitial = context.screenHeight * .35;
+      for (int i = 0; i < MyConstant.circularIcons.length; i++) {
+        final leftWidth = (context.listItemWidth +
+                (i == 0 ? 0.0 : context.listItemWidth / 4)) *
+            i;
+        final bottomVal = bottomInitial * (blueBoxAnim.value) +
+            (context.screenHeight * .45) * listItemAnimationList[i].value;
+        items.add(
+          Positioned(
+            bottom: bottomVal,
+            left: leftWidth,
+            child: MyDimens().getCircularItem(
+              itemWidth: context.listItemWidth,
+              title: MyConstant.circularIconTitles[i],
+              icon: MyConstant.circularIcons[i],
+            ),
+          ),
+        );
+      }
+      return items;
+    } else {
+      return [
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: context.screenHeight * .8,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: List.generate(
+                MyConstant.circularIconTitles.length,
+                (i) => MyDimens().getCircularItem(
+                  itemWidth: context.listItemWidth,
+                  title: MyConstant.circularIconTitles[i],
+                  icon: MyConstant.circularIcons[i],
+                ),
+              ),
+            ),
+          ),
+        )
+      ];
+    }
+  }
+}

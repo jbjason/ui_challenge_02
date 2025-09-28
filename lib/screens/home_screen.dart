@@ -3,7 +3,6 @@ import 'package:ui_challenge_02/constant/media_extension.dart';
 import 'package:ui_challenge_02/constant/my_color.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
 import 'package:ui_challenge_02/constant/my_dimens.dart';
-import 'package:ui_challenge_02/constant/my_image.dart';
 import 'package:ui_challenge_02/screens/cart_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -94,7 +93,6 @@ class HomeScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(17),
                     boxShadow: [
                       BoxShadow(
-                        //  color: Colors.deepPurple.shade300,
                         color: MyColor.primaryColor.withOpacity(0.8),
                         blurRadius: 50,
                         spreadRadius: 2,

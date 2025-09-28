@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ui_challenge_02/constant/media_extension.dart';
-import 'package:ui_challenge_02/constant/my_color.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
-import 'package:ui_challenge_02/constant/my_dimens.dart';
-import 'package:ui_challenge_02/constant/my_image.dart';
+import 'package:ui_challenge_02/widgets/cart_widgets/cart_blue_box.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -56,87 +54,20 @@ class _CartScreenState extends State<CartScreen>
 
   @override
   Widget build(BuildContext context) {
-    final height = context.screenHeight;
     return Scaffold(
       body: Stack(
         clipBehavior: Clip.none,
         children: [
-          Positioned(
-            left: 20 * (1 - _blueBoxAnim.value),
-            right: 20 * (1 - _blueBoxAnim.value),
-            top: (height * .2) * (1 - _blueBoxAnim.value),
-            bottom: (height * .35) * (1 - _blueBoxAnim.value),
-            child: Hero(
-              tag: Key("hero-tag12"),
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                constraints: BoxConstraints.expand(),
-                decoration: BoxDecoration(
-                  color: MyColor.primaryColor,
-                  borderRadius:
-                      BorderRadius.circular(17 * (1 - _blueBoxAnim.value)),
-                ),
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    ..._getCircularItems,
-                  ],
-                ),
-              ),
-            ),
+          CartBlueBox(
+            blueBoxAnim: _blueBoxAnim,
+            listItemAnimationList: _listItemAnimationList,
+            controller: _controller,
           ),
           // white bottom containter
           _getWhiteCard
         ],
       ),
     );
-  }
-
-  List<Positioned> get _getCircularItems {
-    if (_controller.value < 1) {
-      final items = <Positioned>[];
-      final bottomInitial = context.screenHeight * .35;
-      for (int i = 0; i < MyConstant.circularIcons.length; i++) {
-        final leftWidth = (context.listItemWidth +
-                (i == 0 ? 0.0 : context.listItemWidth / 4)) *
-            i;
-        final bottomVal = bottomInitial * (_blueBoxAnim.value) +
-            (context.screenHeight * .45) * _listItemAnimationList[i].value;
-        items.add(
-          Positioned(
-            bottom: bottomVal,
-            left: leftWidth,
-            child: MyDimens().getCircularItem(
-              itemWidth: context.listItemWidth,
-              title: MyConstant.circularIconTitles[i],
-              icon: MyConstant.circularIcons[i],
-            ),
-          ),
-        );
-      }
-      return items;
-    } else {
-      return [
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: context.screenHeight * .8,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: List.generate(
-                MyConstant.circularIconTitles.length,
-                (i) => MyDimens().getCircularItem(
-                  itemWidth: context.listItemWidth,
-                  title: MyConstant.circularIconTitles[i],
-                  icon: MyConstant.circularIcons[i],
-                ),
-              ),
-            ),
-          ),
-        )
-      ];
-    }
   }
 
   Positioned get _getWhiteCard => Positioned(
@@ -149,8 +80,14 @@ class _CartScreenState extends State<CartScreen>
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
           ),
+          child:  Column(
+            children: [
+              
+            ],
+          ),
         ),
       );
+
   @override
   void dispose() {
     _controller.dispose();

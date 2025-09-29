@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ui_challenge_02/constant/media_extension.dart';
+import 'package:ui_challenge_02/constant/my_color.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
 import 'package:ui_challenge_02/widgets/cart_widgets/cart_blue_box.dart';
 
@@ -67,6 +68,26 @@ class _CartScreenState extends State<CartScreen>
           _getWhiteCard
         ],
       ),
+      floatingActionButton: Transform(
+        alignment: Alignment.center,
+        transform: Matrix4.identity()
+          ..translate(20 * _whiteCardAnim.value,20),
+        child: Container(
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: SweepGradient(
+              colors: [
+                MyColor.primaryColor,
+                Colors.deepOrange,
+                Colors.yellow,
+                MyColor.primaryColor,
+              ],
+            ),
+          ),
+          child: Icon(Icons.badge, color: Colors.white),
+        ),
+      ),
     );
   }
 
@@ -80,10 +101,8 @@ class _CartScreenState extends State<CartScreen>
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
           ),
-          child:  Column(
-            children: [
-              
-            ],
+          child: Column(
+            children: [],
           ),
         ),
       );

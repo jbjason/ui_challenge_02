@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ui_challenge_02/constant/media_extension.dart';
+import 'package:ui_challenge_02/constant/my_dimens.dart';
 import 'package:ui_challenge_02/constant/my_image.dart';
 
 class DragTestScreen extends StatefulWidget {
@@ -9,52 +10,70 @@ class DragTestScreen extends StatefulWidget {
 }
 
 class _DragTestScreenState extends State<DragTestScreen> {
-  int acceptedData = 0;
-  Offset? targetCenter = Offset(0, 0);
+  double _percent = 0.0, _test = 0;
+  Offset _currentPoint = Offset(0, 0),
+      _targetCenter = Offset(0, 0),
+      _targetRightCorner = Offset(150, 150);
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) => targetCenter =
-          Offset(context.screenWidth - 50, context.screenHeight - 50),
+      (_) {
+        _targetCenter =
+            Offset(context.screenWidth - 75, context.screenHeight - 75);
+        _targetRightCorner = Offset(context.screenWidth, context.screenHeight);
+
+        print("center : $_targetCenter");
+        print("center : $_targetRightCorner");
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Size: ${context.screenHeight}  -- ${context.screenWidth}");
+    // print("Size: ${context.screenHeight}  -- ${context.screenWidth}");
     return Scaffold(
       appBar:
           AppBar(title: Text("Drag Test"), backgroundColor: Colors.deepPurple),
       body: Stack(
+        fit: StackFit.expand,
         children: [
-          Column(
-            spacing: 20,
-            children: List.generate(
-              3,
-              (i) => Draggable(
-                key: Key("Draggable-0$i"),
-                data: 10,
-                feedback: Image.asset(MyImage.boxImg, width: 200, height: 200),
-                child: Column(
-                  children: [
-                    Image.asset(MyImage.boxImg, width: 200, height: 200),
-                    Text("box --00 $i"),
-                  ],
+          SingleChildScrollView(
+            physics: NeverScrollableScrollPhysics(),
+            child: Column(
+              spacing: 20,
+              children: List.generate(
+                6,
+                (i) => Draggable(
+                  key: Key("Draggable-0$i"),
+                  data: 10,
+                  feedback: Transform.scale(
+                    scale: 1 + _test,
+                    child: Image.asset(MyImage.boxImg, width: 170, height: 170),
+                  ),
+                  child: Column(
+                    children: [
+                      Image.asset(MyImage.boxImg, width: 170, height: 170),
+                      Text("Box 0$i"),
+                    ],
+                  ),
+                  onDragUpdate: (details) {
+                    _currentPoint = details.localPosition;
+                    _test += .0005;
+                    setState(() {});
+                    // print(
+                    //     "dx ${details.localPosition.dx.toStringAsFixed(3)} <---> dy ${details.localPosition.dy.toStringAsFixed(3)}");
+                  },
                 ),
-                onDragUpdate: (details) {
-                  // print(
-                  //     "dx ${details.delta.dx.toStringAsFixed(3)} <---> dy ${details.delta.dy.toStringAsFixed(3)}");
-                },
               ),
             ),
           ),
           Positioned(
             right: 0,
             bottom: 0,
-            height: 100,
-            width: 100,
+            height: 150,
+            width: 150,
             child: DragTarget<int>(
               builder: (
                 BuildContext context,
@@ -63,20 +82,27 @@ class _DragTestScreenState extends State<DragTestScreen> {
               ) {
                 return Container(
                   constraints: BoxConstraints.expand(),
-                  color: Colors.grey.shade100,
+                  color: Colors.grey.shade300,
                   child: Center(child: Icon(Icons.badge)),
                 );
               },
               onMove: (details) {
+                // print(
+                //     "dx ${details.offset.dx.toStringAsPrecision(3)} <---> dy ${details.offset.dy.toStringAsFixed(3)}");
+                // Offset center = Offset(100, 100);
+                // Offset corner = Offset(150, 150); // Using bottom-right corner
+                // Offset point = Offset(75, 75);
+
+                _percent = MyDimens().getDistancePercentage(
+                  currentpoint: _currentPoint,
+                  center: _targetCenter,
+                  rightCorner: _targetRightCorner,
+                );
+                setState(() {});
                 print(
-                    "dx ${details.offset.dx.toStringAsPrecision(3)} <---> dy ${details.offset.dy.toStringAsFixed(3)}");
-                
+                    'current Point from ${_percent.toStringAsFixed(2)}% center');
               },
-              onAcceptWithDetails: (DragTargetDetails<int> details) {
-                setState(() {
-                  acceptedData += details.data;
-                });
-              },
+              onAcceptWithDetails: (DragTargetDetails<int> details) {},
             ),
           ),
         ],

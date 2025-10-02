@@ -15,6 +15,8 @@ class _DragTestScreenState extends State<DragTestScreen> {
       _targetCenter = Offset(0, 0),
       _targetRightCorner = Offset(150, 150);
 
+  final GlobalKey<_ScalingFeedbackWidgetState> _feedbackKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
@@ -39,36 +41,59 @@ class _DragTestScreenState extends State<DragTestScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          SingleChildScrollView(
-            physics: NeverScrollableScrollPhysics(),
+          Draggable(
+            data: 10,
+            // 4. Pass the key and initial parameters to the feedback widget.
+            feedback: ScalingFeedbackWidget(
+              key: _feedbackKey,
+              scale: _percent,
+              child: Image.asset(MyImage.boxImg, width: 170, height: 170),
+            ),
+            // childWhenDragging: Column(
+            //   children: [
+            //     Image.asset(MyImage.boxImg, width: 170, height: 170),
+            //     Text("Box 0"),
+            //   ],
+            // ),
             child: Column(
-              spacing: 20,
-              children: List.generate(
-                6,
-                (i) => Draggable(
-                  key: Key("Draggable-0$i"),
-                  data: 10,
-                  feedback: Transform.scale(
-                    scale: 1 + _test,
-                    child: Image.asset(MyImage.boxImg, width: 170, height: 170),
-                  ),
-                  child: Column(
-                    children: [
-                      Image.asset(MyImage.boxImg, width: 170, height: 170),
-                      Text("Box 0$i"),
-                    ],
-                  ),
-                  onDragUpdate: (details) {
-                    _currentPoint = details.localPosition;
-                    _test += .0005;
-                    setState(() {});
-                    // print(
-                    //     "dx ${details.localPosition.dx.toStringAsFixed(3)} <---> dy ${details.localPosition.dy.toStringAsFixed(3)}");
-                  },
-                ),
-              ),
+              children: [
+                Image.asset(MyImage.boxImg, width: 170, height: 170),
+                Text("Box 0"),
+              ],
             ),
           ),
+
+          // SingleChildScrollView(
+          //   physics: NeverScrollableScrollPhysics(),
+          //   child: Column(
+          //     spacing: 20,
+          //     children:
+          //  List.generate(
+          //   6,
+          //   (i) =>
+          // Draggable(
+          //   feedback: ScalingFeedbackWidget(
+          //     key: _feedbackKey,
+          //     scale: 1 + _test,
+          //     child: Image.asset(MyImage.boxImg, width: 170, height: 170),
+          //   ),
+          //   child: Column(
+          //     children: [
+          //       Image.asset(MyImage.boxImg, width: 170, height: 170),
+          //       Text("Box 0"),
+          //     ],
+          //   ),
+          //   onDragUpdate: (details) {
+          //     _currentPoint = details.localPosition;
+          //     _test += .0005;
+          //     setState(() {});
+          //     // print(
+          //     //     "dx ${details.localPosition.dx.toStringAsFixed(3)} <---> dy ${details.localPosition.dy.toStringAsFixed(3)}");
+          //   },
+          // ),
+          //     ),
+          //   ),
+          // ),
           Positioned(
             right: 0,
             bottom: 0,
@@ -98,7 +123,10 @@ class _DragTestScreenState extends State<DragTestScreen> {
                   center: _targetCenter,
                   rightCorner: _targetRightCorner,
                 );
+                _test += .0005;
                 setState(() {});
+
+                _feedbackKey.currentState?.updateScale(_percent);
                 print(
                     'current Point from ${_percent.toStringAsFixed(2)}% center');
               },
@@ -107,6 +135,39 @@ class _DragTestScreenState extends State<DragTestScreen> {
           ),
         ],
       ),
+    );
+  }
+}
+
+class ScalingFeedbackWidget extends StatefulWidget {
+  final double scale; // The dynamic value you want to update
+  final Widget child; // Your child widget
+
+  const ScalingFeedbackWidget({
+    super.key,
+    required this.scale,
+    required this.child,
+  });
+
+  @override
+  State<ScalingFeedbackWidget> createState() => _ScalingFeedbackWidgetState();
+}
+
+class _ScalingFeedbackWidgetState extends State<ScalingFeedbackWidget> {
+  // 2. A method to update the state from the outside.
+  void updateScale(double newScale) {
+    setState(() {
+      // This will trigger a rebuild of this specific StatefulWidget.
+    });
+    // If you need to store the new value, you would manage state internally
+    // or use a state management solution to get the latest value.
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Transform.scale(
+      scale: widget.scale, // This will be rebuilt when updateScale is called.
+      child: widget.child,
     );
   }
 }

@@ -50,7 +50,7 @@ class MyDimens {
     double maxDistance = sqrt(dxMax * dxMax + dyMax * dyMax);
 
     // Return percentage
-    return (actualDistance / maxDistance).clamp(.2, 1); // * 100;
+    return (actualDistance / maxDistance); // * 100;
     // adding clamp bcz, um using percentage for scalling & its to between (1- (0 to .85)).
     // setting .2 is the lower limit
   }

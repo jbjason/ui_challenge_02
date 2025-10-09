@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:logger/web.dart';
 import 'package:ui_challenge_02/constant/media_extension.dart';
@@ -10,7 +12,9 @@ class DragTestScreen extends StatefulWidget {
   State<DragTestScreen> createState() => _DragTestScreenState();
 }
 
-class _DragTestScreenState extends State<DragTestScreen> {
+class _DragTestScreenState extends State<DragTestScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
   double _leftPoint = 0.0, _topPoint = 0.0, _percent = 1;
   Offset _targetCenter = Offset(0, 0);
   Offset _currentPoint = Offset(0, 0), _targetRightCorner = Offset(150, 150);
@@ -18,6 +22,10 @@ class _DragTestScreenState extends State<DragTestScreen> {
   @override
   void initState() {
     super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 500),
+    );
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
         _targetCenter =
@@ -41,38 +49,34 @@ class _DragTestScreenState extends State<DragTestScreen> {
         fit: StackFit.expand,
         children: [
           Positioned(
-            left: _leftPoint,
-            top: _topPoint,
-            width: 160,
-            height: 160,
+            left:_leftPoint,
+            
+            //  lerpDouble(
+            //     _leftPoint, _targetRightCorner.dx, _controller.value),
+            top:_topPoint,
+               // lerpDouble(_topPoint, _targetRightCorner.dy, _controller.value),
+            width: 140,
+            height: 140,
             child: GestureDetector(
-              onPanEnd: (details) {
-                _topPoint = 0.0;
-                _leftPoint = (context.screenWidth / 2) - 80;
-                setState(() => _percent = 1);
-              },
-              onPanCancel: () {
-                _topPoint = 0.0;
-                _leftPoint = (context.screenWidth / 2) - 80;
-                setState(() => _percent = 1);
-              },
+              onPanEnd: _onPanEnd,
               onPanUpdate: (details) {
                 _currentPoint = details.localPosition;
                 //-80 bcz details.localPosition gives center offset
-                _leftPoint = (_currentPoint.dx - 80).abs();
-                _topPoint = (_currentPoint.dy - 80).abs();
-                //print("left: $_leftPoint. top: $_topPoint");
+                _leftPoint =_currentPoint.dx;
+                _topPoint = (_currentPoint.dy - 70).abs();
+                print("left: $_leftPoint. top: $_topPoint");
                 Offset differnece = _currentPoint - _targetCenter;
                 differnece = Offset(differnece.dx.abs(), differnece.dy.abs());
-                if (differnece.dx <= 40 || differnece.dy <= 40) {
+                if (differnece.dx <= 60 || differnece.dy <= 60) {
                   _percent = MyDimens().getDistancePercentage(
                     currentpoint: _currentPoint,
                     center: _targetCenter,
                     rightCorner: _targetRightCorner,
                   );
                   _printPerncet(_targetCenter, differnece);
+                }else{
+                  _percent=1;
                 }
-
                 setState(() {});
               },
               child: Container(
@@ -173,9 +177,24 @@ class _DragTestScreenState extends State<DragTestScreen> {
     );
   }
 
+  void _onPanEnd(DragEndDetails details) async {
+    if (_percent < 1) {
+   //   await _controller.forward();
+    }
+    _topPoint = 0.0;
+    _leftPoint = (context.screenWidth / 2) - 80;
+    setState(() => _percent = 1);
+  }
+
   void _printPerncet(Offset center, Offset difference) {
     Logger().w("""percent = $_percent. 
        Current(${_currentPoint.dx.toStringAsFixed(2)},${_currentPoint.dy.toStringAsFixed(2)})   Center(${center.dx.toStringAsFixed(2)},${center.dy.toStringAsFixed(2)}) 
        Differnce(${difference.dx.toStringAsFixed(2)},${difference.dy.toStringAsFixed(2)})""");
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

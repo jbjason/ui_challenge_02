@@ -1,5 +1,6 @@
-import 'dart:ui';
+// ignore_for_file: use_build_context_synchronously
 
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:logger/web.dart';
 import 'package:ui_challenge_02/constant/media_extension.dart';
@@ -17,26 +18,35 @@ class _DragTestScreenState extends State<DragTestScreen>
   late AnimationController _controller;
   double _leftPoint = 0.0, _topPoint = 0.0, _percent = 1;
   Offset _targetCenter = Offset(0, 0);
-  Offset _currentPoint = Offset(0, 0), _targetRightCorner = Offset(150, 150);
+  Offset _currentPoint = Offset(0, 0), _targetRightCorner = Offset(0, 0);
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 500),
-    );
+    _init();
+  }
+
+  void _init() {
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
         _targetCenter =
-            Offset(context.screenWidth - 80, context.screenHeight - 80);
+            Offset(context.screenWidth - 100, context.screenHeight - 100);
         _targetRightCorner = Offset(context.screenWidth, context.screenHeight);
-        // print("center : $_targetCenter");
-        // print("center : $_targetRightCorner");
-        _leftPoint = (context.screenWidth / 2) - 80;
+        _leftPoint = (context.screenWidth / 2) - 100;
         setState(() {});
       },
     );
+
+    _controller = AnimationController(
+        vsync: this, duration: Duration(milliseconds: 2000));
+    _controller.addListener(() {
+      print("----------${_controller.value}-------------");
+      _leftPoint = lerpDouble(
+          _leftPoint, (_targetRightCorner.dx -100).abs(), _controller.value)!;
+      _topPoint = lerpDouble(
+          _topPoint, (_targetRightCorner.dy-100).abs(), _controller.value)!;
+      setState(() {});
+    });
   }
 
   @override
@@ -49,22 +59,26 @@ class _DragTestScreenState extends State<DragTestScreen>
         fit: StackFit.expand,
         children: [
           Positioned(
-            left:_leftPoint,
-            
-            //  lerpDouble(
-            //     _leftPoint, _targetRightCorner.dx, _controller.value),
-            top:_topPoint,
-               // lerpDouble(_topPoint, _targetRightCorner.dy, _controller.value),
+            right: 0,
+            bottom: 0,
+            height: 200,
+            width: 200,
+            child: Container(color: Colors.red),
+          ),
+          Positioned(
+            left: _leftPoint,
+            top: _topPoint,
             width: 140,
             height: 140,
             child: GestureDetector(
               onPanEnd: _onPanEnd,
               onPanUpdate: (details) {
                 _currentPoint = details.localPosition;
-                //-80 bcz details.localPosition gives center offset
-                _leftPoint =_currentPoint.dx;
-                _topPoint = (_currentPoint.dy - 70).abs();
-                print("left: $_leftPoint. top: $_topPoint");
+                _leftPoint = _currentPoint.dx;
+                _topPoint = _currentPoint.dy - 70;
+
+                //  print("left: $_leftPoint. top: $_topPoint");
+
                 Offset differnece = _currentPoint - _targetCenter;
                 differnece = Offset(differnece.dx.abs(), differnece.dy.abs());
                 if (differnece.dx <= 60 || differnece.dy <= 60) {
@@ -74,8 +88,8 @@ class _DragTestScreenState extends State<DragTestScreen>
                     rightCorner: _targetRightCorner,
                   );
                   _printPerncet(_targetCenter, differnece);
-                }else{
-                  _percent=1;
+                } else {
+                  _percent = 1;
                 }
                 setState(() {});
               },
@@ -88,7 +102,39 @@ class _DragTestScreenState extends State<DragTestScreen>
               ),
             ),
           ),
-          // Draggable(
+        ],
+      ),
+    );
+  }
+
+  void _onPanEnd(DragEndDetails details) async {
+    if (_percent < 1) {
+      print("its coming--------------------here----------");
+      await _controller.forward(from: 0.0);
+
+      Future.delayed(Duration());
+    }
+    _topPoint = 0.0;
+    _leftPoint = (context.screenWidth / 2) - 80;
+    setState(() => _percent = 1);
+  }
+
+  void _printPerncet(Offset center, Offset difference) {
+    Logger().w("""percent = $_percent. 
+       Current(${_currentPoint.dx.toStringAsFixed(2)},${_currentPoint.dy.toStringAsFixed(2)})   Center(${center.dx.toStringAsFixed(2)},${center.dy.toStringAsFixed(2)}) 
+       Differnce(${difference.dx.toStringAsFixed(2)},${difference.dy.toStringAsFixed(2)})""");
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(() {});
+    _controller.dispose();
+    super.dispose();
+  }
+}
+
+
+ // Draggable(
           //   data: 10,
           //   // 4. Pass the key and initial parameters to the feedback widget.
           //   feedback: Image.asset(MyImage.boxImg, width: 170, height: 170),
@@ -172,29 +218,3 @@ class _DragTestScreenState extends State<DragTestScreen>
           //     onAcceptWithDetails: (DragTargetDetails<int> details) {},
           //   ),
           // ),
-        ],
-      ),
-    );
-  }
-
-  void _onPanEnd(DragEndDetails details) async {
-    if (_percent < 1) {
-   //   await _controller.forward();
-    }
-    _topPoint = 0.0;
-    _leftPoint = (context.screenWidth / 2) - 80;
-    setState(() => _percent = 1);
-  }
-
-  void _printPerncet(Offset center, Offset difference) {
-    Logger().w("""percent = $_percent. 
-       Current(${_currentPoint.dx.toStringAsFixed(2)},${_currentPoint.dy.toStringAsFixed(2)})   Center(${center.dx.toStringAsFixed(2)},${center.dy.toStringAsFixed(2)}) 
-       Differnce(${difference.dx.toStringAsFixed(2)},${difference.dy.toStringAsFixed(2)})""");
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-}

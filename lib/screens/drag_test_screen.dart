@@ -28,10 +28,12 @@ class _DragTestScreenState extends State<DragTestScreen>
   void _init() {
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
-        _targetCenter =
-            Offset(context.screenWidth - 100, context.screenHeight - 100);
-        _targetRightCorner = Offset(context.screenWidth, context.screenHeight);
         _leftPoint = (context.screenWidth / 2) - 100;
+        // setting Target offsets
+        _targetCenter =
+            Offset(context.screenWidth - 150, context.screenHeight - 150 - 20);
+        _targetRightCorner =
+            Offset(context.screenWidth, context.screenHeight - 20);
         setState(() {});
       },
     );
@@ -41,16 +43,17 @@ class _DragTestScreenState extends State<DragTestScreen>
     _controller.addListener(() {
       print("----------${_controller.value}-------------");
       _leftPoint = lerpDouble(
-          _leftPoint, (_targetRightCorner.dx -100).abs(), _controller.value)!;
-      _topPoint = lerpDouble(
-          _topPoint, (_targetRightCorner.dy-100).abs(), _controller.value)!;
+          _leftPoint, (_targetRightCorner.dx - 150).abs(), _controller.value)!;
+      _topPoint = lerpDouble(_topPoint,
+          (_targetRightCorner.dy - 150 - 50).abs(), _controller.value)!;
+
       setState(() {});
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // print("Size: ${context.screenHeight}  -- ${context.screenWidth}");
+    print("Size: ${context.screenHeight}  -- ${context.screenWidth}");
     return Scaffold(
       appBar:
           AppBar(title: Text("Drag Test"), backgroundColor: Colors.deepPurple),
@@ -62,7 +65,7 @@ class _DragTestScreenState extends State<DragTestScreen>
             bottom: 0,
             height: 200,
             width: 200,
-            child: Container(color: Colors.red),
+            child: Container(color: Colors.grey.shade200),
           ),
           Positioned(
             left: _leftPoint,
@@ -75,27 +78,14 @@ class _DragTestScreenState extends State<DragTestScreen>
                 _currentPoint = details.localPosition;
                 _leftPoint = _currentPoint.dx;
                 _topPoint = _currentPoint.dy - 70;
-
                 //  print("left: $_leftPoint. top: $_topPoint");
-
-                Offset differnece = _currentPoint - _targetCenter;
-                differnece = Offset(differnece.dx.abs(), differnece.dy.abs());
-                if (differnece.dx <= 60 || differnece.dy <= 60) {
-                  _percent = MyDimens().getDistancePercentage(
-                    currentpoint: _currentPoint,
-                    center: _targetCenter,
-                    rightCorner: _targetRightCorner,
-                  );
-                  _printPerncet(_targetCenter, differnece);
-                } else {
-                  _percent = 1;
-                }
+                _findDifference();
                 setState(() {});
               },
-              child: Container(
-                color: Colors.amber,
-                child: Transform.scale(
-                  scale: _percent.clamp(0, 1),
+              child: Transform.scale(
+                scale: _percent.clamp(0, 1),
+                child: Container(
+                  color: Colors.amber,
                   child: Image.asset(MyImage.boxImg),
                 ),
               ),
@@ -108,9 +98,7 @@ class _DragTestScreenState extends State<DragTestScreen>
 
   void _onPanEnd(DragEndDetails details) async {
     if (_percent < 1) {
-      print("its coming--------------------here----------");
       await _controller.forward(from: 0.0);
-
       Future.delayed(Duration());
     }
     _topPoint = 0.0;
@@ -118,10 +106,21 @@ class _DragTestScreenState extends State<DragTestScreen>
     setState(() => _percent = 1);
   }
 
-  void _printPerncet(Offset center, Offset difference) {
-    Logger().w("""percent = $_percent. 
-       Current(${_currentPoint.dx.toStringAsFixed(2)},${_currentPoint.dy.toStringAsFixed(2)})   Center(${center.dx.toStringAsFixed(2)},${center.dy.toStringAsFixed(2)}) 
-       Differnce(${difference.dx.toStringAsFixed(2)},${difference.dy.toStringAsFixed(2)})""");
+  void _findDifference() {
+    Offset differnece = _currentPoint - _targetCenter;
+    differnece = Offset(differnece.dx.abs(), differnece.dy.abs());
+    //if (differnece.dy <= 150 ) {
+      _percent = MyDimens().getDistancePercentage(
+        currentpoint: _currentPoint,
+        center: _targetCenter,
+        rightCorner: _targetRightCorner,
+      );
+      Logger().w("""percent = $_percent. 
+       Current(${_currentPoint.dx.toStringAsFixed(2)},${_currentPoint.dy.toStringAsFixed(2)})   Center(${_targetCenter.dx.toStringAsFixed(2)},${_targetCenter.dy.toStringAsFixed(2)}) 
+       Differnce(${differnece.dx.toStringAsFixed(2)},${differnece.dy.toStringAsFixed(2)})""");
+    // } else {
+    //   _percent = 1;
+    // }
   }
 
   @override

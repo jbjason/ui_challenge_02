@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 abstract class MyConstant {
+  static const duration = Duration(milliseconds: 2000);
   static const List<String> circularIconTitles = [
     "Kitchen",
     "Bedroom",

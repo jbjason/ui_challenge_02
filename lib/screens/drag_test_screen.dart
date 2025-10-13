@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:logger/web.dart';
 import 'package:ui_challenge_02/constant/media_extension.dart';
+import 'package:ui_challenge_02/constant/my_constant.dart';
 import 'package:ui_challenge_02/constant/my_dimens.dart';
 import 'package:ui_challenge_02/constant/my_image.dart';
 
@@ -15,6 +16,7 @@ class DragTestScreen extends StatefulWidget {
 class _DragTestScreenState extends State<DragTestScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  late Animation<double> _boxAcceptAnim;
   double _leftPoint = 0.0, _topPoint = 0.0, _percent = 1;
   Offset _targetCenter = Offset(0, 0);
   Offset _currentPoint = Offset(0, 0), _targetRightCorner = Offset(0, 0);
@@ -26,34 +28,21 @@ class _DragTestScreenState extends State<DragTestScreen>
   }
 
   void _init() {
+    _controller =
+        AnimationController(vsync: this, duration: MyConstant.duration);
+    _boxAcceptAnim =
+        CurvedAnimation(curve: Interval(0.0, 0.8), parent: _controller);
     WidgetsBinding.instance.addPostFrameCallback(
-      (_) {
-        _leftPoint = (context.screenWidth / 2) - 100;
-        // setting Target offsets
-        _targetCenter =
-            Offset(context.screenWidth - 150, context.screenHeight - 150 - 20);
-        _targetRightCorner =
-            Offset(context.screenWidth, context.screenHeight - 20);
-        setState(() {});
-      },
+      (_) => setState(() {
+        _setBoxInitialPoint();
+        _setTargentPoint();
+      }),
     );
-
-    _controller = AnimationController(
-        vsync: this, duration: Duration(milliseconds: 2000));
-    _controller.addListener(() {
-      print("----------${_controller.value}-------------");
-      _leftPoint = lerpDouble(
-          _leftPoint, (_targetRightCorner.dx - 150).abs(), _controller.value)!;
-      _topPoint = lerpDouble(_topPoint,
-          (_targetRightCorner.dy - 150 - 50).abs(), _controller.value)!;
-
-      setState(() {});
-    });
+    _controller.addListener(() => setState(() => _boxAnimObDragAccepted()));
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Size: ${context.screenHeight}  -- ${context.screenWidth}");
     return Scaffold(
       appBar:
           AppBar(title: Text("Drag Test"), backgroundColor: Colors.deepPurple),
@@ -77,9 +66,9 @@ class _DragTestScreenState extends State<DragTestScreen>
               onPanUpdate: (details) {
                 _currentPoint = details.localPosition;
                 _leftPoint = _currentPoint.dx;
-                _topPoint = _currentPoint.dy - 70;
+                _topPoint = _currentPoint.dy + 20;
                 //  print("left: $_leftPoint. top: $_topPoint");
-                _findDifference();
+                _findDifference(_currentPoint);
                 setState(() {});
               },
               child: Transform.scale(
@@ -96,27 +85,45 @@ class _DragTestScreenState extends State<DragTestScreen>
     );
   }
 
+  void _setBoxInitialPoint() {
+    _leftPoint = (context.screenWidth / 2) - 75;
+    _topPoint = context.screenHeight * .15;
+  }
+
+  void _setTargentPoint() {
+    _targetCenter =
+        Offset(context.screenWidth - 150, context.screenHeight - 150);
+    _targetRightCorner = Offset(context.screenWidth, context.screenHeight);
+  }
+
+  void _boxAnimObDragAccepted() {
+    _leftPoint =
+        lerpDouble(_leftPoint, _targetCenter.dx, _boxAcceptAnim.value)!;
+    _topPoint = lerpDouble(
+        _topPoint, (_targetCenter.dy - 75).abs(), _boxAcceptAnim.value)!;
+    _findDifference(Offset(_leftPoint, _topPoint + 70));
+  }
+
   void _onPanEnd(DragEndDetails details) async {
     if (_percent < 1) {
       await _controller.forward(from: 0.0);
       Future.delayed(Duration());
     }
-    _topPoint = 0.0;
-    _leftPoint = (context.screenWidth / 2) - 80;
+    _setBoxInitialPoint();
     setState(() => _percent = 1);
   }
 
-  void _findDifference() {
-    Offset differnece = _currentPoint - _targetCenter;
+  void _findDifference(Offset currentPoint) {
+    Offset differnece = currentPoint - _targetCenter;
     differnece = Offset(differnece.dx.abs(), differnece.dy.abs());
     //if (differnece.dy <= 150 ) {
-      _percent = MyDimens().getDistancePercentage(
-        currentpoint: _currentPoint,
-        center: _targetCenter,
-        rightCorner: _targetRightCorner,
-      );
-      Logger().w("""percent = $_percent. 
-       Current(${_currentPoint.dx.toStringAsFixed(2)},${_currentPoint.dy.toStringAsFixed(2)})   Center(${_targetCenter.dx.toStringAsFixed(2)},${_targetCenter.dy.toStringAsFixed(2)}) 
+    _percent = MyDimens().getDistancePercentage(
+      currentpoint: currentPoint,
+      center: _targetCenter,
+      rightCorner: _targetRightCorner,
+    );
+    Logger().w("""percent = $_percent. 
+       Current(${currentPoint.dx.toStringAsFixed(2)},${currentPoint.dy.toStringAsFixed(2)})   Center(${_targetCenter.dx.toStringAsFixed(2)},${_targetCenter.dy.toStringAsFixed(2)}) 
        Differnce(${differnece.dx.toStringAsFixed(2)},${differnece.dy.toStringAsFixed(2)})""");
     // } else {
     //   _percent = 1;

@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:logger/web.dart';
 import 'package:ui_challenge_02/constant/media_extension.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
 import 'package:ui_challenge_02/constant/my_dimens.dart';
@@ -47,8 +46,7 @@ class _DragTestScreenState extends State<DragTestScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:
-          AppBar(title: Text("Drag Test"), backgroundColor: Colors.deepPurple),
+      appBar: AppBar(backgroundColor: Colors.deepPurple),
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -69,8 +67,7 @@ class _DragTestScreenState extends State<DragTestScreen>
               onPanUpdate: (details) {
                 _currentPoint = details.localPosition;
                 _leftPoint = _currentPoint.dx + 60;
-                _topPoint = _currentPoint.dy +60;
-                //  print("left: $_leftPoint. top: $_topPoint");
+                _topPoint = _currentPoint.dy + 60;
                 _findDifference(_currentPoint);
                 setState(() {});
               },
@@ -92,49 +89,11 @@ class _DragTestScreenState extends State<DragTestScreen>
   void _setBoxInitialPoint() {
     _leftPoint = (context.screenWidth / 2) - 75;
     _topPoint = context.screenHeight * .15;
-    final leftTop = const Offset(300, 400);
-    final bottomRight = const Offset(400, 500);
-
-    // Test case 1: Center point
-    final center = const Offset(350, 450);
-    final centerPercentage = MyDimens().getDistancePercentage(
-      point: center,
-      leftTop: leftTop,
-      bottomRight: bottomRight,
-    );
-    print('Center (350, 450): ${centerPercentage.toStringAsFixed(2)}'); // ~0.50
-
-    // Test case 2: Point at (325, 425)
-    final point2 = const Offset(325, 425);
-    final point2Percentage = MyDimens().getDistancePercentage(
-      point: point2,
-      leftTop: leftTop,
-      bottomRight: bottomRight,
-    );
-    print('Point (325, 425): ${point2Percentage.toStringAsFixed(2)}'); // ~0.75
-
-    // Test case 3: Bottom-right corner
-    final bottomRightPercentage = MyDimens().getDistancePercentage(
-      point: bottomRight,
-      leftTop: leftTop,
-      bottomRight: bottomRight,
-    );
-    print(
-        'Bottom-right (400, 500): ${bottomRightPercentage.toStringAsFixed(2)}'); // 0.00
-
-    // Test case 4: Top-left corner
-    final leftTopPercentage = MyDimens().getDistancePercentage(
-      point: leftTop,
-      leftTop: leftTop,
-      bottomRight: bottomRight,
-    );
-    print(
-        'Top-left (300, 400): ${leftTopPercentage.toStringAsFixed(2)}'); // 1.00
   }
 
   void _setTargentPoint() {
     _targetLeftTop =
-        Offset(context.screenWidth - 400, context.screenHeight - 400);
+        Offset(context.screenWidth - 380, context.screenHeight - 380);
     _targetBottomRight = Offset(context.screenWidth, context.screenHeight - 20);
   }
 
@@ -142,7 +101,7 @@ class _DragTestScreenState extends State<DragTestScreen>
     _leftPoint = lerpDouble(
         _leftPoint, (_targetBottomRight.dx - 70).abs(), _boxAcceptAnim.value)!;
     _topPoint = lerpDouble(
-        _topPoint, (_targetBottomRight.dy - 100).abs(), _boxAcceptAnim.value)!;
+        _topPoint, (_targetBottomRight.dy - 130).abs(), _boxAcceptAnim.value)!;
     final currentOffset =
         (_myWidgetKey.currentContext!.findRenderObject() as RenderBox)
             .localToGlobal(Offset.zero);
@@ -150,10 +109,7 @@ class _DragTestScreenState extends State<DragTestScreen>
   }
 
   void _onPanEnd(DragEndDetails details) async {
-    if (_percent < 1) {
-      await _controller.forward(from: 0.0);
-      Future.delayed(Duration());
-    }
+    if (_percent < 1) await _controller.forward(from: 0.0);
     _setBoxInitialPoint();
     setState(() => _percent = 1);
   }

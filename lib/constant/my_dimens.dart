@@ -34,24 +34,31 @@ class MyDimens {
     );
   }
 
+  /// Calculates the percentage distance of a point from the bottom-right corner
+  /// of a box, normalized by the box's diagonal.
+  ///
+  /// Returns 0.0 when the point is at bottomRight, and 1.0 when at leftTop.
+  ///
+  /// Parameters:
+  /// - [point]: The point to measure
+  /// - [leftTop]: Top-left corner of the box
+  /// - [bottomRight]: Bottom-right corner of the box
   double getDistancePercentage({
-    required Offset currentpoint,
-    required Offset center,
-    required Offset rightCorner,
+    required Offset point,
+    required Offset leftTop,
+    required Offset bottomRight,
   }) {
-    // Calculate actual distance from center to point
-    double dxPoint = currentpoint.dx - center.dx;
-    double dyPoint = currentpoint.dy - center.dy;
-    double actualDistance = sqrt(dxPoint * dxPoint + dyPoint * dyPoint);
+    // Calculate the maximum possible distance (diagonal of the box)
+    final boxWidth = bottomRight.dx - leftTop.dx;
+    final boxHeight = bottomRight.dy - leftTop.dy;
+    final maxDistance = sqrt(boxWidth * boxWidth + boxHeight * boxHeight);
 
-    // Calculate maximum possible distance (center to corner)
-    double dxMax = rightCorner.dx - center.dx;
-    double dyMax = rightCorner.dy - center.dy;
-    double maxDistance = sqrt(dxMax * dxMax + dyMax * dyMax);
+    // Calculate the actual distance from the point to bottomRight
+    final dx = bottomRight.dx - point.dx;
+    final dy = bottomRight.dy - point.dy;
+    final actualDistance = sqrt(dx * dx + dy * dy);
 
-    // Return percentage
-    return (actualDistance / maxDistance); // * 100;
-    // adding clamp bcz, um using percentage for scalling & its to between (1- (0 to .85)).
-    // setting .2 is the lower limit
+    // Return the percentage (normalized distance)
+    return actualDistance / maxDistance;
   }
 }

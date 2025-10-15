@@ -15,11 +15,12 @@ class DragTestScreen extends StatefulWidget {
 
 class _DragTestScreenState extends State<DragTestScreen>
     with SingleTickerProviderStateMixin {
+  final GlobalKey _myWidgetKey = GlobalKey();
   late AnimationController _controller;
   late Animation<double> _boxAcceptAnim;
   double _leftPoint = 0.0, _topPoint = 0.0, _percent = 1;
-  Offset _targetCenter = Offset(0, 0);
-  Offset _currentPoint = Offset(0, 0), _targetRightCorner = Offset(0, 0);
+  Offset _targetLeftTop = Offset(0, 0), _targetBottomRight = Offset(0, 0);
+  Offset _currentPoint = Offset(0, 0);
 
   @override
   void initState() {
@@ -38,8 +39,10 @@ class _DragTestScreenState extends State<DragTestScreen>
         _setTargentPoint();
       }),
     );
-    _controller.addListener(() => setState(() => _boxAnimObDragAccepted()));
+    _controller.addListener(() => _listener());
   }
+
+  void _listener() => setState(() => _boxAnimObDragAccepted());
 
   @override
   Widget build(BuildContext context) {
@@ -59,14 +62,14 @@ class _DragTestScreenState extends State<DragTestScreen>
           Positioned(
             left: _leftPoint,
             top: _topPoint,
-            width: 140,
-            height: 140,
+            width: 120,
+            height: 120,
             child: GestureDetector(
               onPanEnd: _onPanEnd,
               onPanUpdate: (details) {
                 _currentPoint = details.localPosition;
-                _leftPoint = _currentPoint.dx;
-                _topPoint = _currentPoint.dy + 20;
+                _leftPoint = _currentPoint.dx + 60;
+                _topPoint = _currentPoint.dy +60;
                 //  print("left: $_leftPoint. top: $_topPoint");
                 _findDifference(_currentPoint);
                 setState(() {});
@@ -74,6 +77,7 @@ class _DragTestScreenState extends State<DragTestScreen>
               child: Transform.scale(
                 scale: _percent.clamp(0, 1),
                 child: Container(
+                  key: _myWidgetKey,
                   color: Colors.amber,
                   child: Image.asset(MyImage.boxImg),
                 ),
@@ -88,20 +92,61 @@ class _DragTestScreenState extends State<DragTestScreen>
   void _setBoxInitialPoint() {
     _leftPoint = (context.screenWidth / 2) - 75;
     _topPoint = context.screenHeight * .15;
+    final leftTop = const Offset(300, 400);
+    final bottomRight = const Offset(400, 500);
+
+    // Test case 1: Center point
+    final center = const Offset(350, 450);
+    final centerPercentage = MyDimens().getDistancePercentage(
+      point: center,
+      leftTop: leftTop,
+      bottomRight: bottomRight,
+    );
+    print('Center (350, 450): ${centerPercentage.toStringAsFixed(2)}'); // ~0.50
+
+    // Test case 2: Point at (325, 425)
+    final point2 = const Offset(325, 425);
+    final point2Percentage = MyDimens().getDistancePercentage(
+      point: point2,
+      leftTop: leftTop,
+      bottomRight: bottomRight,
+    );
+    print('Point (325, 425): ${point2Percentage.toStringAsFixed(2)}'); // ~0.75
+
+    // Test case 3: Bottom-right corner
+    final bottomRightPercentage = MyDimens().getDistancePercentage(
+      point: bottomRight,
+      leftTop: leftTop,
+      bottomRight: bottomRight,
+    );
+    print(
+        'Bottom-right (400, 500): ${bottomRightPercentage.toStringAsFixed(2)}'); // 0.00
+
+    // Test case 4: Top-left corner
+    final leftTopPercentage = MyDimens().getDistancePercentage(
+      point: leftTop,
+      leftTop: leftTop,
+      bottomRight: bottomRight,
+    );
+    print(
+        'Top-left (300, 400): ${leftTopPercentage.toStringAsFixed(2)}'); // 1.00
   }
 
   void _setTargentPoint() {
-    _targetCenter =
-        Offset(context.screenWidth - 150, context.screenHeight - 150);
-    _targetRightCorner = Offset(context.screenWidth, context.screenHeight);
+    _targetLeftTop =
+        Offset(context.screenWidth - 400, context.screenHeight - 400);
+    _targetBottomRight = Offset(context.screenWidth, context.screenHeight - 20);
   }
 
   void _boxAnimObDragAccepted() {
-    _leftPoint =
-        lerpDouble(_leftPoint, _targetCenter.dx, _boxAcceptAnim.value)!;
+    _leftPoint = lerpDouble(
+        _leftPoint, (_targetBottomRight.dx - 70).abs(), _boxAcceptAnim.value)!;
     _topPoint = lerpDouble(
-        _topPoint, (_targetCenter.dy - 75).abs(), _boxAcceptAnim.value)!;
-    _findDifference(Offset(_leftPoint, _topPoint + 70));
+        _topPoint, (_targetBottomRight.dy - 100).abs(), _boxAcceptAnim.value)!;
+    final currentOffset =
+        (_myWidgetKey.currentContext!.findRenderObject() as RenderBox)
+            .localToGlobal(Offset.zero);
+    _findDifference(Offset(currentOffset.dx, currentOffset.dy + 20));
   }
 
   void _onPanEnd(DragEndDetails details) async {
@@ -114,25 +159,18 @@ class _DragTestScreenState extends State<DragTestScreen>
   }
 
   void _findDifference(Offset currentPoint) {
-    Offset differnece = currentPoint - _targetCenter;
+    Offset differnece = currentPoint - _targetLeftTop;
     differnece = Offset(differnece.dx.abs(), differnece.dy.abs());
-    //if (differnece.dy <= 150 ) {
     _percent = MyDimens().getDistancePercentage(
-      currentpoint: currentPoint,
-      center: _targetCenter,
-      rightCorner: _targetRightCorner,
+      point: currentPoint,
+      leftTop: _targetLeftTop,
+      bottomRight: _targetBottomRight,
     );
-    Logger().w("""percent = $_percent. 
-       Current(${currentPoint.dx.toStringAsFixed(2)},${currentPoint.dy.toStringAsFixed(2)})   Center(${_targetCenter.dx.toStringAsFixed(2)},${_targetCenter.dy.toStringAsFixed(2)}) 
-       Differnce(${differnece.dx.toStringAsFixed(2)},${differnece.dy.toStringAsFixed(2)})""");
-    // } else {
-    //   _percent = 1;
-    // }
   }
 
   @override
   void dispose() {
-    _controller.removeListener(() {});
+    _controller.removeListener(_listener);
     _controller.dispose();
     super.dispose();
   }
@@ -212,8 +250,8 @@ class _DragTestScreenState extends State<DragTestScreen>
           //       // Offset point = Offset(75, 75);
           //       _percent = MyDimens().getDistancePercentage(
           //         currentpoint: _currentPoint,
-          //         center: _targetCenter,
-          //         rightCorner: _targetRightCorner,
+          //         center: _targetLeftTop,
+          //         rightCorner: _targetBottomRight,
           //       );
           //       _test += .0005;
           //       setState(() {});

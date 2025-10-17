@@ -59,6 +59,6 @@ class MyDimens {
     final actualDistance = sqrt(dx * dx + dy * dy);
 
     // Return the percentage (normalized distance)
-    return actualDistance / maxDistance;
+    return (actualDistance / maxDistance);
   }
 }

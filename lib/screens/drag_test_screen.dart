@@ -1,10 +1,13 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ui_challenge_02/constant/media_extension.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
 import 'package:ui_challenge_02/constant/my_dimens.dart';
 import 'package:ui_challenge_02/constant/my_image.dart';
+// ignore: unused_import
+import 'dart:math' as math;
 
 class DragTestScreen extends StatefulWidget {
   const DragTestScreen({super.key});
@@ -31,7 +34,7 @@ class _DragTestScreenState extends State<DragTestScreen>
     _controller =
         AnimationController(vsync: this, duration: MyConstant.duration);
     _boxAcceptAnim =
-        CurvedAnimation(curve: Interval(0.0, 0.8), parent: _controller);
+        CurvedAnimation(curve: Interval(0, .5), parent: _controller);
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => setState(() {
         _setBoxInitialPoint();
@@ -56,6 +59,35 @@ class _DragTestScreenState extends State<DragTestScreen>
             height: 200,
             width: 200,
             child: Container(color: Colors.grey.shade200),
+          ),
+          Positioned(
+            bottom: 10,
+            right: 10,
+            child: Transform.scale(
+              scale: 1 + .5 * (1 - _percent.clamp(0, 1)),
+              child: Container(
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: SweepGradient(
+                    tileMode: TileMode.clamp,
+                    transform: GradientRotation(20 * _controller.value),
+                    colors: [
+                      Colors.pink,
+                      Colors.deepPurple,
+                      Colors.yellow,
+                      Colors.pink,
+                    ],
+                  ),
+                ),
+                child: Icon(
+                    _percent > .7
+                        ? CupertinoIcons.bag_fill
+                        : CupertinoIcons.cart_fill,
+                    size: 35,
+                    color: Colors.white),
+              ),
+            ),
           ),
           Positioned(
             left: _leftPoint,
@@ -99,9 +131,9 @@ class _DragTestScreenState extends State<DragTestScreen>
 
   void _boxAnimObDragAccepted() {
     _leftPoint = lerpDouble(
-        _leftPoint, (_targetBottomRight.dx - 70).abs(), _boxAcceptAnim.value)!;
+        _leftPoint, (_targetBottomRight.dx - 90).abs(), _boxAcceptAnim.value )!;
     _topPoint = lerpDouble(
-        _topPoint, (_targetBottomRight.dy - 130).abs(), _boxAcceptAnim.value)!;
+        _topPoint, (_targetBottomRight.dy - 160).abs(), _boxAcceptAnim.value)!;
     final currentOffset =
         (_myWidgetKey.currentContext!.findRenderObject() as RenderBox)
             .localToGlobal(Offset.zero);

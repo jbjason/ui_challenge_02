@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:ui';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ui_challenge_02/constant/media_extension.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
@@ -21,8 +20,10 @@ class _DragTestScreenState extends State<DragTestScreen>
   late AnimationController _controller;
   late Animation<double> _boxAcceptAnim;
   double _leftPoint = 0.0, _topPoint = 0.0, _percent = 1;
+  double _startLeftPoint = 0.0, _startTopPoint = 0.0;
   Offset _targetLeftTop = Offset(0, 0), _targetBottomRight = Offset(0, 0);
   Offset _currentPoint = Offset(0, 0);
+  int _selectedColor = 0;
 
   @override
   void initState() {
@@ -52,6 +53,7 @@ class _DragTestScreenState extends State<DragTestScreen>
       appBar: AppBar(backgroundColor: Colors.deepPurple),
       body: Stack(
         fit: StackFit.expand,
+        clipBehavior: Clip.none,
         children: [
           Positioned(
             right: 0,
@@ -71,47 +73,125 @@ class _DragTestScreenState extends State<DragTestScreen>
                   shape: BoxShape.circle,
                   gradient: SweepGradient(
                     tileMode: TileMode.clamp,
-                    transform: GradientRotation(20 * _controller.value),
+                    transform: GradientRotation(
+                        20 * (1 - _percent.clamp(0, 1)) * _controller.value),
                     colors: [
-                      Colors.pink,
-                      Colors.deepPurple,
+                      Colors.deepOrange,
                       Colors.yellow,
-                      Colors.pink,
+                      Colors.yellow,
+                      Colors.deepPurple,
+                      Colors.deepPurple,
+                      Colors.deepOrange,
                     ],
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 15,
+                      color: Colors.grey,
+                      spreadRadius: 2,
+                      offset: Offset(5, 10),
+                    )
+                  ],
                 ),
-                child: Icon(
-                    _percent > .7
-                        ? CupertinoIcons.bag_fill
-                        : CupertinoIcons.cart_fill,
-                    size: 35,
-                    color: Colors.white),
+                child: Image.asset(
+                  _percent < .5 ? MyImage.bagOpenImg : MyImage.bagOffImg,
+                  width: 40,
+                ),
               ),
             ),
           ),
-          Positioned(
-            left: _leftPoint,
-            top: _topPoint,
-            width: 120,
-            height: 120,
-            child: GestureDetector(
-              onPanEnd: _onPanEnd,
-              onPanUpdate: (details) {
-                _currentPoint = details.localPosition;
-                _leftPoint = _currentPoint.dx + 60;
-                _topPoint = _currentPoint.dy + 60;
-                _findDifference(_currentPoint);
-                setState(() {});
-              },
-              child: Transform.scale(
-                scale: _percent.clamp(0, 1),
-                child: Container(
-                  key: _myWidgetKey,
-                  color: Colors.amber,
-                  child: Image.asset(MyImage.boxImg),
+          Column(
+            children: [
+              SizedBox(
+                width: context.screenWidth,
+                height: context.screenHeight * .4,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      left: _startLeftPoint,
+                      top: _startTopPoint,
+                      child: SizedBox(
+                        width: 180,
+                        height: 180,
+                        child: Image.asset(
+                          MyImage.boxImg,
+                          color: MyConstant.colors[_selectedColor],
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      left: _leftPoint,
+                      top: _topPoint,
+                      width: 180,
+                      height: 180,
+                      child: GestureDetector(
+                        onPanEnd: _onPanEnd,
+                        onPanUpdate: (details) {
+                          _currentPoint = details.localPosition;
+                          _leftPoint = _currentPoint.dx + 60;
+                          _topPoint = _currentPoint.dy + 60;
+                          _findDifference(_currentPoint);
+                          setState(() {});
+                        },
+                        child: Transform.scale(
+                          scale: _percent.clamp(0, 1),
+                          child: Container(
+                            key: _myWidgetKey,
+                            child: Image.asset(
+                              MyImage.boxImg,
+                              color: MyConstant.colors[_selectedColor],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
+              Text(
+                "Bonsai Plant ABC",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                "Bonsai Plant ABC",
+                style: TextStyle(fontSize: 12, color: Colors.black54),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                "\$ 124 /=",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 15,
+                children: List.generate(
+                  MyConstant.colors.length,
+                  (i) => InkWell(
+                    onTap: () => setState(() => _selectedColor = i),
+                    child: Container(
+                      padding: EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _selectedColor == i
+                            ? MyConstant.colors[i]
+                            : Colors.transparent,
+                      ),
+                      child: CircleAvatar(
+                        radius: 14,
+                        backgroundColor: Colors.white,
+                        child: CircleAvatar(
+                            radius: 12, backgroundColor: MyConstant.colors[i]),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -121,6 +201,8 @@ class _DragTestScreenState extends State<DragTestScreen>
   void _setBoxInitialPoint() {
     _leftPoint = (context.screenWidth / 2) - 75;
     _topPoint = context.screenHeight * .15;
+    _startLeftPoint = _leftPoint;
+    _startTopPoint = _topPoint;
   }
 
   void _setTargentPoint() {
@@ -131,9 +213,9 @@ class _DragTestScreenState extends State<DragTestScreen>
 
   void _boxAnimObDragAccepted() {
     _leftPoint = lerpDouble(
-        _leftPoint, (_targetBottomRight.dx - 90).abs(), _boxAcceptAnim.value )!;
+        _leftPoint, (_targetBottomRight.dx - 130).abs(), _boxAcceptAnim.value)!;
     _topPoint = lerpDouble(
-        _topPoint, (_targetBottomRight.dy - 160).abs(), _boxAcceptAnim.value)!;
+        _topPoint, (_targetBottomRight.dy - 215).abs(), _boxAcceptAnim.value)!;
     final currentOffset =
         (_myWidgetKey.currentContext!.findRenderObject() as RenderBox)
             .localToGlobal(Offset.zero);

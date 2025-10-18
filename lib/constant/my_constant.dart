@@ -17,4 +17,10 @@ abstract class MyConstant {
     Icons.ice_skating_outlined,
     Icons.sports_outlined,
   ];
+
+  static const List<Color> colors = [
+    Colors.blue,
+    Colors.yellow,
+    Colors.greenAccent,
+  ];
 }

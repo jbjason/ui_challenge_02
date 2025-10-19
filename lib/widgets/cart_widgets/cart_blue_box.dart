@@ -4,6 +4,7 @@ import 'package:ui_challenge_02/constant/media_extension.dart';
 import 'package:ui_challenge_02/constant/my_color.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
 import 'package:ui_challenge_02/constant/my_dimens.dart';
+import 'package:ui_challenge_02/screens/cart_screen.dart';
 
 class CartBlueBox extends StatelessWidget {
   const CartBlueBox({
@@ -26,18 +27,29 @@ class CartBlueBox extends StatelessWidget {
       bottom: (height * .35) * (1 - blueBoxAnim.value),
       child: Hero(
         tag: Key("hero-tag12"),
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 20),
-          constraints: BoxConstraints.expand(),
-          decoration: BoxDecoration(
-            color: MyColor.primaryColor,
-            borderRadius: BorderRadius.circular(17 * (1 - blueBoxAnim.value)),
-          ),
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              ..._getCircularItems(context),
-            ],
+        child: InkWell(
+          onTap: () async {
+            controller.forward(from: 0.0).whenComplete(() {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => CartScreen()),
+              );
+              controller.reverse(from: 1);
+            });
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            constraints: BoxConstraints.expand(),
+            decoration: BoxDecoration(
+              color: MyColor.primaryColor,
+              borderRadius: BorderRadius.circular(17 * (1 - blueBoxAnim.value)),
+            ),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                ..._getCircularItems(context),
+              ],
+            ),
           ),
         ),
       ),
@@ -45,7 +57,7 @@ class CartBlueBox extends StatelessWidget {
   }
 
   List<Positioned> _getCircularItems(BuildContext context) {
-    if (controller.value < 1) {
+    if (controller.value > 0) {
       final items = <Positioned>[];
       final bottomInitial = context.screenHeight * .35;
       for (int i = 0; i < MyConstant.circularIcons.length; i++) {
@@ -72,7 +84,7 @@ class CartBlueBox extends StatelessWidget {
         Positioned(
           left: 0,
           right: 0,
-          bottom: context.screenHeight * .8,
+          bottom: 0,
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(

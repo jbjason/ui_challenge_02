@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:ui';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ui_challenge_02/constant/media_extension.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
@@ -49,25 +50,23 @@ class _DragTestScreenState extends State<DragTestScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.deepPurple),
-      body: Stack(
-        fit: StackFit.expand,
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            right: 0,
-            bottom: 0,
-            height: 200,
-            width: 200,
-            child: Container(color: Colors.grey.shade200),
-          ),
-          Positioned(
-            bottom: 10,
-            right: 10,
-            child: Transform.scale(
-              scale: 1 + .5 * (1 - _percent.clamp(0, 1)),
-              child: Container(
+    return Stack(
+      fit: StackFit.expand,
+      clipBehavior: Clip.none,
+      children: [
+        // Positioned(
+        //   right: 0,
+        //   bottom: 0,
+        //   height: 200,
+        //   width: 200,
+        //   child: Container(color: Colors.grey.shade200),
+        // ),
+        Positioned(
+          bottom: 10,
+          right: 10,
+          child: Transform.scale(
+            scale: 1 + .5 * (1 - _percent.clamp(0, 1)),
+            child: Container(
                 padding: EdgeInsets.all(15),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -93,108 +92,106 @@ class _DragTestScreenState extends State<DragTestScreen>
                     )
                   ],
                 ),
-                child: Image.asset(
-                  _percent < .5 ? MyImage.bagOpenImg : MyImage.bagOffImg,
-                  width: 40,
-                ),
-              ),
-            ),
+                child: _percent < .5
+                    ? Image.asset(MyImage.bagOpenImg, width: 45)
+                    : Icon(CupertinoIcons.bag_fill,
+                        color: Colors.white, size: 45)),
           ),
-          Column(
-            children: [
-              SizedBox(
-                width: context.screenWidth,
-                height: context.screenHeight * .4,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Positioned(
-                      left: _startLeftPoint,
-                      top: _startTopPoint,
-                      child: SizedBox(
-                        width: 180,
-                        height: 180,
-                        child: Image.asset(
-                          MyImage.boxImg,
-                          color: MyConstant.colors[_selectedColor],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      left: _leftPoint,
-                      top: _topPoint,
+        ),
+        Column(
+          children: [
+            SizedBox(
+              width: context.screenWidth,
+              height: context.screenHeight * .4,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned(
+                    left: _startLeftPoint,
+                    top: _startTopPoint,
+                    child: SizedBox(
                       width: 180,
                       height: 180,
-                      child: GestureDetector(
-                        onPanEnd: _onPanEnd,
-                        onPanUpdate: (details) {
-                          _currentPoint = details.localPosition;
-                          _leftPoint = _currentPoint.dx + 60;
-                          _topPoint = _currentPoint.dy + 60;
-                          _findDifference(_currentPoint);
-                          setState(() {});
-                        },
-                        child: Transform.scale(
-                          scale: _percent.clamp(0, 1),
-                          child: Container(
-                            key: _myWidgetKey,
-                            child: Image.asset(
-                              MyImage.boxImg,
-                              color: MyConstant.colors[_selectedColor],
-                            ),
+                      child: Image.asset(
+                        MyImage.boxImg,
+                        color: MyConstant.colors[_selectedColor],
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    left: _leftPoint,
+                    top: _topPoint,
+                    width: 180,
+                    height: 180,
+                    child: GestureDetector(
+                      onPanEnd: _onPanEnd,
+                      onPanUpdate: (details) {
+                        _currentPoint = details.localPosition;
+                        _leftPoint = _currentPoint.dx + 60;
+                        _topPoint = _currentPoint.dy + 60;
+                        _findDifference(_currentPoint);
+                        setState(() {});
+                      },
+                      child: Transform.scale(
+                        scale: _percent.clamp(0, 1),
+                        child: Container(
+                          key: _myWidgetKey,
+                          child: Image.asset(
+                            MyImage.boxImg,
+                            color: MyConstant.colors[_selectedColor],
                           ),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Text(
-                "Bonsai Plant ABC",
-                style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              "Bonsai Plant ABC",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Text(
+              "Bonsai Plant ABC",
+              style: TextStyle(fontSize: 12, color: Colors.black54),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              "\$ 124 /=",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 25,
               ),
-              Text(
-                "Bonsai Plant ABC",
-                style: TextStyle(fontSize: 12, color: Colors.black54),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                "\$ 124 /=",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 15,
-                children: List.generate(
-                  MyConstant.colors.length,
-                  (i) => InkWell(
-                    onTap: () => setState(() => _selectedColor = i),
-                    child: Container(
-                      padding: EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _selectedColor == i
-                            ? MyConstant.colors[i]
-                            : Colors.transparent,
-                      ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: 15,
+              children: List.generate(
+                MyConstant.colors.length,
+                (i) => InkWell(
+                  onTap: () => setState(() => _selectedColor = i),
+                  child: Container(
+                    padding: EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _selectedColor == i
+                          ? MyConstant.colors[i]
+                          : Colors.transparent,
+                    ),
+                    child: CircleAvatar(
+                      radius: 14,
+                      backgroundColor: Colors.white,
                       child: CircleAvatar(
-                        radius: 14,
-                        backgroundColor: Colors.white,
-                        child: CircleAvatar(
-                            radius: 12, backgroundColor: MyConstant.colors[i]),
-                      ),
+                          radius: 12, backgroundColor: MyConstant.colors[i]),
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

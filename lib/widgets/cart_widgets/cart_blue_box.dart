@@ -29,10 +29,13 @@ class CartBlueBox extends StatelessWidget {
         tag: Key("hero-tag12"),
         child: InkWell(
           onTap: () async {
-            controller.forward(from: 0.0).whenComplete(() {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => CartScreen()),
+            controller.forward(from: 0.0).whenComplete(() async {
+              await Navigator.of(context).push(
+                PageRouteBuilder(
+                  transitionDuration: const Duration(milliseconds: 300),
+                  pageBuilder: ((context, animation, secondaryAnimation) =>
+                      FadeTransition(opacity: animation, child: CartScreen())),
+                ),
               );
               controller.reverse(from: 1);
             });

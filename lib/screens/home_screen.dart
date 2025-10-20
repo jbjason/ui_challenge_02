@@ -5,7 +5,6 @@ import 'package:ui_challenge_02/widgets/cart_widgets/cart_blue_box.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -122,7 +121,6 @@ class _HomeScreenState extends State<HomeScreen>
             listItemAnimationList: _listItemAnimationList,
             controller: _controller,
           ),
-
           // white bottom containter
           _getWhiteCard
         ],

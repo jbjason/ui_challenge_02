@@ -29,9 +29,9 @@ class _HomeScreenState extends State<HomeScreen>
     _blueBoxAnim =
         CurvedAnimation(parent: _controller, curve: const Interval(.1, .5));
     _lisItemAnim =
-        CurvedAnimation(parent: _controller, curve: const Interval(.2, .8));
+        CurvedAnimation(parent: _controller, curve: const Interval(.2, .9));
     _whiteCardAnim =
-        CurvedAnimation(parent: _controller, curve: const Interval(.5, 1));
+        CurvedAnimation(parent: _controller, curve: const Interval(.5, .9));
 
     final int length = MyConstant.circularIcons.length;
     final intervalPerItem = 1 / length;
@@ -56,13 +56,13 @@ class _HomeScreenState extends State<HomeScreen>
     return Scaffold(
       body: Stack(
         children: [
-          // appBar
           SafeArea(
             child: Padding(
               padding: EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // top texts
                   Text(
                     "Jb Jason's Transaction",
                     style: Theme.of(context).textTheme.headlineMedium,
@@ -71,7 +71,9 @@ class _HomeScreenState extends State<HomeScreen>
                     "Flutter Dev",
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
+                  // spacer --> we r using spacer to but blue-box with the help of Stack()å 
                   const Spacer(),
+                  // bottom list
                   SizedBox(
                     height: context.screenHeight * .25,
                     width: context.screenWidth,

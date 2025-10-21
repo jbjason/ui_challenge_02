@@ -6,6 +6,7 @@ import 'package:ui_challenge_02/constant/my_color.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
 import 'package:ui_challenge_02/constant/my_dimens.dart';
 import 'package:ui_challenge_02/constant/my_image.dart';
+import 'package:ui_challenge_02/widgets/cart_widgets/cart_item_image.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -13,24 +14,27 @@ class CartScreen extends StatefulWidget {
   State<CartScreen> createState() => _CartScreenState();
 }
 
-class _CartScreenState extends State<CartScreen>
-    with SingleTickerProviderStateMixin {
+class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
   final GlobalKey _myWidgetKey = GlobalKey();
-  late AnimationController _controller;
+  late AnimationController _controller, _controller2;
   late Animation<double> _boxAcceptAnim;
+  late Animation<Color?> _colorAnimation;
+  late Animation<double?> _sizeAnimation;
+  late Animation<double> curve;
   double _leftPoint = 0.0, _topPoint = 0.0, _percent = 1;
   double _startLeftPoint = 0.0, _startTopPoint = 0.0;
   Offset _targetLeftTop = Offset(0, 0), _targetBottomRight = Offset(0, 0);
   Offset _currentPoint = Offset(0, 0);
-  int _selectedColor = 0;
+  int _previousColor = 0, _selectedColor = 0;
 
   @override
   void initState() {
     super.initState();
-    _init();
+    _initController1();
+    _initController2();
   }
 
-  void _init() {
+  void _initController1() {
     _controller =
         AnimationController(vsync: this, duration: MyConstant.duration);
     _boxAcceptAnim =
@@ -44,6 +48,22 @@ class _CartScreenState extends State<CartScreen>
     _controller.addListener(() => _listener());
   }
 
+  void _initController2() {
+    _controller2 = AnimationController(
+        duration: const Duration(milliseconds: 1000), vsync: this);
+    curve = CurvedAnimation(parent: _controller2, curve: Curves.slowMiddle);
+    _colorAnimation =
+        ColorTween(begin: MyConstant.colors[0], end: MyConstant.colors[0])
+            .animate(curve);
+
+    _sizeAnimation = TweenSequence(<TweenSequenceItem<double>>[
+      TweenSequenceItem<double>(
+          tween: Tween<double>(begin: 180, end: 200), weight: 50),
+      TweenSequenceItem<double>(
+          tween: Tween<double>(begin: 200, end: 180), weight: 50)
+    ]).animate(curve);
+  }
+
   void _listener() => setState(() => _boxAnimObDragAccepted());
   @override
   Widget build(BuildContext context) {
@@ -52,6 +72,7 @@ class _CartScreenState extends State<CartScreen>
         clipBehavior: Clip.none,
         fit: StackFit.expand,
         children: [
+          // blue box
           Container(
             padding: EdgeInsets.only(top: 56),
             color: MyColor.primaryColor,
@@ -73,6 +94,7 @@ class _CartScreenState extends State<CartScreen>
           ),
           // white bottom containter
           _getWhiteCard(context),
+          // bottom colorful cart icon
           Positioned(
             bottom: 10,
             right: 10,
@@ -118,18 +140,17 @@ class _CartScreenState extends State<CartScreen>
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
+                    // image on back --> not draggable
                     Positioned(
                       left: _startLeftPoint,
                       top: _startTopPoint,
-                      child: SizedBox(
-                        width: 180,
-                        height: 180,
-                        child: Image.asset(
-                          MyImage.boxImg,
-                          color: MyConstant.colors[_selectedColor],
-                        ),
+                      child: CartItemImage(
+                        controller: _controller2,
+                        sizeAnimation: _sizeAnimation,
+                        colorAnimation: _colorAnimation,
                       ),
                     ),
+                    // Draggable image on front
                     Positioned(
                       left: _leftPoint,
                       top: _topPoint,
@@ -161,18 +182,26 @@ class _CartScreenState extends State<CartScreen>
               ),
               Text(
                 "Bonsai Plant ABC",
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontFamily: MyConstant.font1,
+                ),
               ),
               Text(
                 "Bonsai Plant ABC",
-                style: TextStyle(fontSize: 12, color: Colors.black54),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.black54,
+                  fontFamily: MyConstant.font1,
+                ),
               ),
               const SizedBox(height: 20),
               Text(
-                "\$ 124 /=",
+                "\$ 124",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
+                  fontFamily: MyConstant.font1,
                 ),
               ),
               const SizedBox(height: 20),
@@ -182,7 +211,16 @@ class _CartScreenState extends State<CartScreen>
                 children: List.generate(
                   MyConstant.colors.length,
                   (i) => InkWell(
-                    onTap: () => setState(() => _selectedColor = i),
+                    onTap: () async {
+                      _previousColor = _selectedColor;
+                      _selectedColor = i;
+                      _colorAnimation = ColorTween(
+                        begin: MyConstant.colors[_previousColor],
+                        end: MyConstant.colors[_selectedColor],
+                      ).animate(curve);
+                      setState(() {});
+                      _controller2.forward(from: 0.0);
+                    },
                     child: Container(
                       padding: EdgeInsets.all(2),
                       decoration: BoxDecoration(
@@ -192,14 +230,35 @@ class _CartScreenState extends State<CartScreen>
                             : Colors.transparent,
                       ),
                       child: CircleAvatar(
-                        radius: 14,
+                        radius: 12,
                         backgroundColor: Colors.white,
                         child: CircleAvatar(
-                            radius: 12, backgroundColor: MyConstant.colors[i]),
+                            radius: 10, backgroundColor: MyConstant.colors[i]),
                       ),
                     ),
                   ),
                 ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  TextButton(onPressed: () {}, child: Text("Add to Cart")),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: MyColor.primaryColor,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 30, vertical: 12)),
+                    child: Text(
+                      "Buy Now",
+                      style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.white,
+                          fontFamily: MyConstant.font1),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -265,6 +324,7 @@ class _CartScreenState extends State<CartScreen>
   void dispose() {
     _controller.removeListener(_listener);
     _controller.dispose();
+    _controller2.dispose();
     super.dispose();
   }
 }

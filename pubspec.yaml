@@ -40,7 +40,7 @@ flutter:
         - asset: assets/fonts/script.ttf
     - family: Vinque
       fonts:
-        - asset: assets/fonts/vinque.ttf
+        - asset: assets/fonts/vinque.otf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package

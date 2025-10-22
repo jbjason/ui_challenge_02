@@ -184,7 +184,7 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
                 "Bonsai Plant ABC",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  fontFamily: MyConstant.font1,
+                  fontFamily: MyConstant.font3,
                 ),
               ),
               Text(
@@ -192,7 +192,7 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.black54,
-                  fontFamily: MyConstant.font1,
+                  fontFamily: MyConstant.font3,
                 ),
               ),
               const SizedBox(height: 20),
@@ -201,7 +201,7 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
-                  fontFamily: MyConstant.font1,
+                  fontFamily: MyConstant.font3,
                 ),
               ),
               const SizedBox(height: 20),
@@ -255,7 +255,7 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
                       style: TextStyle(
                           fontSize: 15,
                           color: Colors.white,
-                          fontFamily: MyConstant.font1),
+                          fontFamily: MyConstant.font3),
                     ),
                   ),
                 ],

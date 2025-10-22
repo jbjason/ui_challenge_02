@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 abstract class MyConstant {
-  static const String font1 = "assets/fonts/casab.ttf";
-  static const String font2 = "assets/fonts/script.ttf";
-  static const String font3 = "assets/fonts/vinque.ttf";
+  static const String font1 = "Casab";
+  static const String font2 = "Script";
+  static const String font3 = "Vinque";
 
   static const duration = Duration(milliseconds: 2000);
   static const List<String> circularIconTitles = [

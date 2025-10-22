@@ -65,11 +65,14 @@ class _HomeScreenState extends State<HomeScreen>
                   // top texts
                   Text(
                     "Jb Jason's Transaction",
-                    style: Theme.of(context).textTheme.headlineMedium,
+                    style: TextStyle(
+                      fontSize: 30,fontFamily: "Vinque"
+                    )
                   ),
                   Text(
-                    "Flutter Dev",
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    "Flutter Dev", style: TextStyle(
+                      fontSize: 20,fontFamily: "Vinque"
+                    )
                   ),
                   // spacer --> we r using spacer to but blue-box with the help of Stack()å 
                   const Spacer(),

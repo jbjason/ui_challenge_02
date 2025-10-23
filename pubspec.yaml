@@ -12,6 +12,8 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   logger: ^2.6.2
+  lottie: ^3.3.2
+  google_fonts: ^6.3.2
 
 dev_dependencies:
   flutter_test:
@@ -25,6 +27,7 @@ flutter:
   assets:
     - assets/
     - assets/fonts/
+    - assets/box_image/
 
   # To add custom fonts to your application, add a fonts section here,
   # in this "flutter" section. Each entry in this list should have a

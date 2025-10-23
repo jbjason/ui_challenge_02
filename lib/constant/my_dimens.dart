@@ -7,10 +7,15 @@ class MyDimens {
     required double itemWidth,
     required String title,
     required IconData icon,
+    required int selectedIndex,
+    required int currentIndex,
   }) {
     return Container(
       width: itemWidth,
       margin: EdgeInsets.only(left: itemWidth / 4),
+      padding: EdgeInsets.symmetric(horizontal: 7, vertical: 15),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30), color: Colors.white10),
       child: Column(
         children: [
           Container(
@@ -28,6 +33,19 @@ class MyDimens {
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 color: MyColor.whiteColor),
+          ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.topCenter,
+            child: Container(
+              padding: EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: selectedIndex == currentIndex
+                    ? Colors.white
+                    : Colors.transparent,
+              ),
+            ),
           ),
         ],
       ),

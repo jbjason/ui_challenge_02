@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ui_challenge_02/constant/media_extension.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
+import 'package:ui_challenge_02/constant/my_image.dart';
 import 'package:ui_challenge_02/widgets/cart_widgets/cart_blue_box.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -63,18 +65,10 @@ class _HomeScreenState extends State<HomeScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // top texts
-                  Text(
-                    "Jb Jason's Transaction",
-                    style: TextStyle(
-                      fontSize: 30,fontFamily: "Vinque"
-                    )
-                  ),
-                  Text(
-                    "Flutter Dev", style: TextStyle(
-                      fontSize: 20,fontFamily: "Vinque"
-                    )
-                  ),
-                  // spacer --> we r using spacer to but blue-box with the help of Stack()å 
+                  Text("Jb Jason Decoration",
+                      style: GoogleFonts.lora(fontSize: 30,fontWeight: FontWeight.bold)),
+                  Text("App Developer", style: GoogleFonts.oswald(fontSize: 20)),
+                  // spacer --> we r using spacer to but blue-box with the help of Stack()å
                   const Spacer(),
                   // bottom list
                   SizedBox(
@@ -97,8 +91,9 @@ class _HomeScreenState extends State<HomeScreen>
                                 child: Container(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(12),
-                                    color: Colors.purple[50],
+                                    color: Colors.purple[100],
                                   ),
+                                  child: Image.asset(MyImage.boxImage(0)),
                                 ),
                               ),
                               const SizedBox(width: 20),
@@ -108,6 +103,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     borderRadius: BorderRadius.circular(12),
                                     color: Colors.deepPurple[50],
                                   ),
+                                  child: Image.asset(MyImage.boxImage(1)),
                                 ),
                               ),
                             ],

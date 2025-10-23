@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ui_challenge_02/constant/media_extension.dart';
 import 'package:ui_challenge_02/constant/my_color.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
@@ -74,18 +75,23 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
         children: [
           // blue box
           Container(
-            padding: EdgeInsets.only(top: 56),
+            padding: EdgeInsets.only(top: 13),
             color: MyColor.primaryColor,
+            alignment: Alignment.topCenter,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: SafeArea(
-                child: Row(
-                  children: List.generate(
-                    MyConstant.circularIconTitles.length,
-                    (i) => MyDimens().getCircularItem(
-                      itemWidth: context.listItemWidth,
-                      title: MyConstant.circularIconTitles[i],
-                      icon: MyConstant.circularIcons[i],
+                child: UnconstrainedBox(
+                  child: Row(
+                    children: List.generate(
+                      MyConstant.circularIconTitles.length,
+                      (i) => MyDimens().getCircularItem(
+                        itemWidth: context.listItemWidth,
+                        title: MyConstant.circularIconTitles[i],
+                        icon: MyConstant.circularIcons[i],
+                        currentIndex: i,
+                        selectedIndex: 0,
+                      ),
                     ),
                   ),
                 ),
@@ -182,26 +188,23 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
               ),
               Text(
                 "Bonsai Plant ABC",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontFamily: MyConstant.font3,
+                style: GoogleFonts.lora(
+                  fontWeight: FontWeight.bold,fontSize: 25
                 ),
               ),
               Text(
                 "Bonsai Plant ABC",
-                style: TextStyle(
+                style: GoogleFonts.lora(
                   fontSize: 12,
                   color: Colors.black54,
-                  fontFamily: MyConstant.font3,
                 ),
               ),
               const SizedBox(height: 20),
               Text(
                 "\$ 124",
-                style: TextStyle(
+                style: GoogleFonts.lora(
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
-                  fontFamily: MyConstant.font3,
                 ),
               ),
               const SizedBox(height: 20),

@@ -7,7 +7,9 @@ import 'package:ui_challenge_02/constant/my_color.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
 import 'package:ui_challenge_02/constant/my_dimens.dart';
 import 'package:ui_challenge_02/constant/my_image.dart';
+import 'package:ui_challenge_02/widgets/cart_widgets/cart_blue_box.dart';
 import 'package:ui_challenge_02/widgets/cart_widgets/cart_item_image.dart';
+import 'package:ui_challenge_02/widgets/cart_widgets/cart_white_card.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -74,32 +76,9 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
         fit: StackFit.expand,
         children: [
           // blue box
-          Container(
-            padding: EdgeInsets.only(top: 13),
-            color: MyColor.primaryColor,
-            alignment: Alignment.topCenter,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: SafeArea(
-                child: UnconstrainedBox(
-                  child: Row(
-                    children: List.generate(
-                      MyConstant.circularIconTitles.length,
-                      (i) => MyDimens().getCircularItem(
-                        itemWidth: context.listItemWidth,
-                        title: MyConstant.circularIconTitles[i],
-                        icon: MyConstant.circularIcons[i],
-                        currentIndex: i,
-                        selectedIndex: 0,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+          CartBlueBox(),
           // white bottom containter
-          _getWhiteCard(context),
+          CartWhiteCard(),
           // bottom colorful cart icon
           Positioned(
             bottom: 10,
@@ -188,9 +167,8 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
               ),
               Text(
                 "Bonsai Plant ABC",
-                style: GoogleFonts.lora(
-                  fontWeight: FontWeight.bold,fontSize: 25
-                ),
+                style:
+                    GoogleFonts.lora(fontWeight: FontWeight.bold, fontSize: 25),
               ),
               Text(
                 "Bonsai Plant ABC",
@@ -269,19 +247,6 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
       ),
     );
   }
-
-  Positioned _getWhiteCard(BuildContext context) => Positioned(
-        left: 0,
-        right: 0,
-        bottom: 0,
-        height: context.screenHeight * .8,
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-          ),
-        ),
-      );
 
   void _setBoxInitialPoint() {
     _leftPoint = (context.screenWidth / 2) - 75;

@@ -1,13 +1,12 @@
 import 'dart:ui';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:ui_challenge_02/constant/media_extension.dart';
-import 'package:ui_challenge_02/constant/my_color.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
 import 'package:ui_challenge_02/constant/my_dimens.dart';
 import 'package:ui_challenge_02/constant/my_image.dart';
 import 'package:ui_challenge_02/widgets/cart_widgets/cart_blue_box.dart';
+import 'package:ui_challenge_02/widgets/cart_widgets/cart_box_details.dart';
+import 'package:ui_challenge_02/widgets/cart_widgets/cart_floating_bag_button.dart';
 import 'package:ui_challenge_02/widgets/cart_widgets/cart_item_image.dart';
 import 'package:ui_challenge_02/widgets/cart_widgets/cart_white_card.dart';
 
@@ -85,163 +84,56 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
             right: 10,
             child: Transform.scale(
               scale: 1 + .5 * (1 - _percent.clamp(0, 1)),
-              child: Container(
-                  padding: EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: SweepGradient(
-                      tileMode: TileMode.clamp,
-                      transform: GradientRotation(
-                          20 * (1 - _percent.clamp(0, 1)) * _controller.value),
-                      colors: [
-                        Colors.deepOrange,
-                        Colors.yellow,
-                        Colors.yellow,
-                        Colors.deepPurple,
-                        Colors.deepPurple,
-                        Colors.deepOrange,
-                      ],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 15,
-                        color: Colors.grey,
-                        spreadRadius: 2,
-                        offset: Offset(5, 10),
-                      )
-                    ],
-                  ),
-                  child: _percent < .5
-                      ? Image.asset(MyImage.bagOpenImg, width: 45)
-                      : Icon(CupertinoIcons.bag_fill,
-                          color: Colors.white, size: 45)),
+              child: CartFloatingBagButton(
+                  percent: _percent, controllerValue: _controller.value),
             ),
           ),
-          Column(
-            children: [
-              SizedBox(
-                width: context.screenWidth,
-                height: context.screenHeight * .5,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    // image on back --> not draggable
-                    Positioned(
-                      left: _startLeftPoint,
-                      top: _startTopPoint,
-                      child: CartItemImage(
-                        controller: _controller2,
-                        sizeAnimation: _sizeAnimation,
-                        colorAnimation: _colorAnimation,
-                      ),
-                    ),
-                    // Draggable image on front
-                    Positioned(
-                      left: _leftPoint,
-                      top: _topPoint,
-                      width: 180,
-                      height: 180,
-                      child: GestureDetector(
-                        onPanEnd: _onPanEnd,
-                        onPanUpdate: (details) {
-                          _currentPoint = details.localPosition;
-                          _leftPoint = _currentPoint.dx + 60;
-                          _topPoint = _currentPoint.dy + 60;
-                          _findDifference(_currentPoint);
-                          setState(() {});
-                        },
-                        child: Transform.scale(
-                          scale: _percent.clamp(0, 1),
-                          child: Container(
-                            key: _myWidgetKey,
-                            child: Image.asset(
-                              MyImage.boxImg,
-                              color: MyConstant.colors[_selectedColor],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                "Bonsai Plant ABC",
-                style:
-                    GoogleFonts.lora(fontWeight: FontWeight.bold, fontSize: 25),
-              ),
-              Text(
-                "Bonsai Plant ABC",
-                style: GoogleFonts.lora(
-                  fontSize: 12,
-                  color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Text(
-                "\$ 124",
-                style: GoogleFonts.lora(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
-                ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 15,
-                children: List.generate(
-                  MyConstant.colors.length,
-                  (i) => InkWell(
-                    onTap: () async {
-                      _previousColor = _selectedColor;
-                      _selectedColor = i;
-                      _colorAnimation = ColorTween(
-                        begin: MyConstant.colors[_previousColor],
-                        end: MyConstant.colors[_selectedColor],
-                      ).animate(curve);
-                      setState(() {});
-                      _controller2.forward(from: 0.0);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _selectedColor == i
-                            ? MyConstant.colors[i]
-                            : Colors.transparent,
-                      ),
-                      child: CircleAvatar(
-                        radius: 12,
-                        backgroundColor: Colors.white,
-                        child: CircleAvatar(
-                            radius: 10, backgroundColor: MyConstant.colors[i]),
-                      ),
-                    ),
+          // details --> text, Colors, buttons
+          Positioned(
+            top: context.screenHeight * .5,
+            left: 0,
+            right: 0,
+            child: CartBoxDetails(
+                selectedColor: _selectedColor, onTap: _onColorTap),
+          ),
+          // image on back --> not draggable
+          Positioned(
+            left: _startLeftPoint,
+            top: _startTopPoint,
+            child: Image.asset(
+              MyImage.boxImg,
+              color: MyConstant.colors[_selectedColor],
+              height: 180,
+              width: 180,
+            ),
+          ),
+          // Draggable image on front
+          Positioned(
+            left: _leftPoint,
+            top: _topPoint,
+            // width: 180,
+            // height: 180,
+            child: GestureDetector(
+              onPanEnd: _onPanEnd,
+              onPanUpdate: (details) {
+                _currentPoint = details.localPosition;
+                _leftPoint = _currentPoint.dx + 60;
+                _topPoint = _currentPoint.dy + 60;
+                _findDifference(_currentPoint);
+                setState(() {});
+              },
+              child: Transform.scale(
+                scale: _percent.clamp(0, 1),
+                child: Container(
+                  key: _myWidgetKey,
+                  child: CartItemImage(
+                    controller: _controller2,
+                    sizeAnimation: _sizeAnimation,
+                    colorAnimation: _colorAnimation,
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  TextButton(onPressed: () {}, child: Text("Add to Cart")),
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                        backgroundColor: MyColor.primaryColor,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 30, vertical: 12)),
-                    child: Text(
-                      "Buy Now",
-                      style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.white,
-                          fontFamily: MyConstant.font3),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ],
       ),
@@ -286,6 +178,17 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
       leftTop: _targetLeftTop,
       bottomRight: _targetBottomRight,
     );
+  }
+
+  void _onColorTap(int i) {
+    _previousColor = _selectedColor;
+    _selectedColor = i;
+    _colorAnimation = ColorTween(
+      begin: MyConstant.colors[_previousColor],
+      end: MyConstant.colors[_selectedColor],
+    ).animate(curve);
+    setState(() {});
+    _controller2.forward(from: 0.0);
   }
 
   @override

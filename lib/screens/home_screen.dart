@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ui_challenge_02/constant/media_extension.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
+import 'package:ui_challenge_02/widgets/cart_widgets/cart_floating_bag_button.dart';
 import 'package:ui_challenge_02/widgets/home_widgets/home_blue_box.dart';
+import 'package:ui_challenge_02/widgets/home_widgets/home_bottom_navigate_bar.dart';
 import 'package:ui_challenge_02/widgets/home_widgets/home_top_text_bottom_cards.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,7 +15,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _blueBoxAnim, _lisItemAnim, _whiteCardAnim;
+  late Animation<double> _blueBoxAnim,
+      _lisItemAnim,
+      _whiteCardAnim,
+      _cartButtonAnim;
   final List<Animation<double>> _listItemAnimationList = [];
 
   @override
@@ -33,6 +38,9 @@ class _HomeScreenState extends State<HomeScreen>
         CurvedAnimation(parent: _controller, curve: const Interval(.2, .9));
     _whiteCardAnim =
         CurvedAnimation(parent: _controller, curve: const Interval(.5, .9));
+    _cartButtonAnim = CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(.5, .9, curve: Curves.bounceInOut));
 
     final int length = MyConstant.circularIcons.length;
     final intervalPerItem = 1 / length;
@@ -65,7 +73,26 @@ class _HomeScreenState extends State<HomeScreen>
             controller: _controller,
           ),
           // white bottom containter
-          _getWhiteCard
+          _getWhiteCard,
+          Positioned(
+            bottom: 10,
+            right: 10,
+            child: Opacity(
+              opacity: _cartButtonAnim.value,
+              child: Transform(
+                alignment: Alignment.center,
+                transform: Matrix4.identity()
+                  ..translate(30 * (1 - _cartButtonAnim.value), 0.0, 0.0),
+                child: CartFloatingBagButton(percent: 1, controllerValue: 0),
+              ),
+            ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 15,
+            child: HomeBottomNavigateBar(),
+          ),
         ],
       ),
     );
@@ -76,13 +103,10 @@ class _HomeScreenState extends State<HomeScreen>
         right: 0,
         bottom: (-context.screenHeight * .8) * (1 - _whiteCardAnim.value),
         height: context.screenHeight * .8,
-        child: Container(
+        child: DecoratedBox(
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
-          ),
-          child: Column(
-            children: [],
           ),
         ),
       );

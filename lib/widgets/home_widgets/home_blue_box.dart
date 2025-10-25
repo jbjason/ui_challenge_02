@@ -65,12 +65,13 @@ class HomeBlueBox extends StatelessWidget {
                     children: [
                       Text(
                         "⛅ 32° C",
-                        style: TextStyle(color: Colors.white, fontSize: 11),
+                        style: GoogleFonts.archivoBlack(
+                            color: Colors.white, fontSize: 18),
                       ),
                       Text(
                         "24",
                         style: GoogleFonts.archivoBlack(
-                            color: Colors.white, fontSize: 40),
+                            color: Colors.white, fontSize: 65),
                       ),
                       Text(
                         "JANUARY",

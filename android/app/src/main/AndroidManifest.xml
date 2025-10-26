@@ -2,6 +2,7 @@
     <application
         android:label="ui_challenge_02"
         android:name="${applicationName}"
+        android:enableOnBackInvokedCallback="true"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

@@ -32,6 +32,7 @@ class CartBoxDetails extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
+        // colors list
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 15,
@@ -58,6 +59,7 @@ class CartBoxDetails extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 20),
+        // add to cart button
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [

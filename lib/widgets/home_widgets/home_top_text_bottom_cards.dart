@@ -10,11 +10,11 @@ class HomeTopTextBottomCards extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 15),
+            const SizedBox(height: 35),
             Row(
               spacing: 20,
               children: [

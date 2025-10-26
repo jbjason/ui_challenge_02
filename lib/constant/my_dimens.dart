@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:ui_challenge_02/constant/my_color.dart';
 import 'dart:math';
 
@@ -29,7 +30,7 @@ class MyDimens {
           const SizedBox(height: 5),
           Text(
             title,
-            style: TextStyle(
+            style: GoogleFonts.montserrat(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
                 color: MyColor.whiteColor),
@@ -52,7 +53,7 @@ class MyDimens {
     );
   }
 
-  /// Calculates the percentage distance of a point from the bottom-right corner
+  /// Calculating the percentage distance of a point from the bottom-right corner
   /// of a box, normalized by the box's diagonal.
   ///
   /// Returns 0.0 when the point is at bottomRight, and 1.0 when at leftTop.

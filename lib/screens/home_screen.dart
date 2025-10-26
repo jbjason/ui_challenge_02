@@ -74,6 +74,7 @@ class _HomeScreenState extends State<HomeScreen>
           ),
           // white bottom containter
           _getWhiteCard,
+          // floating cart button
           Positioned(
             bottom: 10,
             right: 10,
@@ -82,16 +83,21 @@ class _HomeScreenState extends State<HomeScreen>
               child: Transform(
                 alignment: Alignment.center,
                 transform: Matrix4.identity()
-                  ..translate(30 * (1 - _cartButtonAnim.value), 0.0, 0.0),
-                child: CartFloatingBagButton(percent: 1, controllerValue: 0),
+                  ..translate(0.0, -100.0 * (1 - _cartButtonAnim.value), 0.0),
+                child: CartFloatingBagButton(
+                  percent: 1,
+                  controllerValue: 0,
+                  count: 0,
+                ),
               ),
             ),
           ),
+          // bottom navigation bar
           Positioned(
             left: 0,
             right: 0,
             bottom: 15,
-            child: HomeBottomNavigateBar(),
+            child: _controller.value > 0 ? SizedBox() : HomeBottomNavigateBar(),
           ),
         ],
       ),

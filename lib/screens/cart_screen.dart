@@ -20,20 +20,20 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
   final GlobalKey _myWidgetKey = GlobalKey();
   late AnimationController _controller, _controller2;
   late Animation<double> _boxAcceptAnim;
-  late Animation<Color?> _colorAnimation;
-  late Animation<double?> _sizeAnimation;
+  late Animation<Color?> _colorAnima;
+  late Animation<double?> _sizeAnim, _countAnim;
   late Animation<double> curve;
   double _leftPoint = 0.0, _topPoint = 0.0, _percent = 1;
   double _startLeftPoint = 0.0, _startTopPoint = 0.0;
   Offset _targetLeftTop = Offset(0, 0), _targetBottomRight = Offset(0, 0);
   Offset _currentPoint = Offset(0, 0);
-  int _previousColor = 0, _selectedColor = 0;
+  int _previousColor = 0, _selectedColor = 0, _count = 0;
 
   @override
   void initState() {
     super.initState();
     _initController1();
-    _initController2();
+    _initColorChangeController();
   }
 
   void _initController1() {
@@ -41,6 +41,8 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
         AnimationController(vsync: this, duration: MyConstant.duration);
     _boxAcceptAnim =
         CurvedAnimation(curve: Interval(0, .5), parent: _controller);
+    _countAnim = CurvedAnimation(
+        parent: _controller, curve: Interval(.8, 1, curve: Curves.easeIn));
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => setState(() {
         _setBoxInitialPoint();
@@ -50,15 +52,15 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
     _controller.addListener(() => _listener());
   }
 
-  void _initController2() {
+  void _initColorChangeController() {
     _controller2 = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
     curve = CurvedAnimation(parent: _controller2, curve: Curves.slowMiddle);
-    _colorAnimation =
+    _colorAnima =
         ColorTween(begin: MyConstant.colors[0], end: MyConstant.colors[0])
             .animate(curve);
 
-    _sizeAnimation = TweenSequence(<TweenSequenceItem<double>>[
+    _sizeAnim = TweenSequence(<TweenSequenceItem<double>>[
       TweenSequenceItem<double>(
           tween: Tween<double>(begin: 180, end: 200), weight: 50),
       TweenSequenceItem<double>(
@@ -85,7 +87,11 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
             child: Transform.scale(
               scale: 1 + .5 * (1 - _percent.clamp(0, 1)),
               child: CartFloatingBagButton(
-                  percent: _percent, controllerValue: _controller.value),
+                percent: _percent,
+                controllerValue: _controller.value,
+                count: _count,
+                countAnim: _countAnim.value ?? 0,
+              ),
             ),
           ),
           // details --> text, Colors, buttons
@@ -121,6 +127,7 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
                 _topPoint = _currentPoint.dy + 60;
                 _findDifference(_currentPoint);
                 setState(() {});
+                print("percent:     $_percent");
               },
               child: Transform.scale(
                 scale: _percent.clamp(0, 1),
@@ -128,8 +135,8 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
                   key: _myWidgetKey,
                   child: CartItemImage(
                     controller: _controller2,
-                    sizeAnimation: _sizeAnimation,
-                    colorAnimation: _colorAnimation,
+                    sizeAnimation: _sizeAnim,
+                    colorAnimation: _colorAnima,
                   ),
                 ),
               ),
@@ -165,7 +172,10 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
   }
 
   void _onPanEnd(DragEndDetails details) async {
-    if (_percent < 1) await _controller.forward(from: 0.0);
+    if (_percent < 1) {
+      await _controller.forward(from: 0.0);
+      _count++;
+    }
     _setBoxInitialPoint();
     setState(() => _percent = 1);
   }
@@ -183,7 +193,7 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
   void _onColorTap(int i) {
     _previousColor = _selectedColor;
     _selectedColor = i;
-    _colorAnimation = ColorTween(
+    _colorAnima = ColorTween(
       begin: MyConstant.colors[_previousColor],
       end: MyConstant.colors[_selectedColor],
     ).animate(curve);

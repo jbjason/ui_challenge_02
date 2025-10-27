@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:ui_challenge_02/constant/media_extension.dart';
 import 'package:ui_challenge_02/constant/my_constant.dart';
 import 'package:ui_challenge_02/constant/my_dimens.dart';
-import 'package:ui_challenge_02/constant/my_image.dart';
 import 'package:ui_challenge_02/widgets/cart_widgets/cart_blue_box.dart';
 import 'package:ui_challenge_02/widgets/cart_widgets/cart_box_details.dart';
 import 'package:ui_challenge_02/widgets/cart_widgets/cart_floating_bag_button.dart';
@@ -106,19 +105,16 @@ class _CartScreenState extends State<CartScreen> with TickerProviderStateMixin {
           Positioned(
             left: _startLeftPoint,
             top: _startTopPoint,
-            child: Image.asset(
-              MyImage.boxImg,
-              color: MyConstant.colors[_selectedColor],
-              height: 180,
-              width: 180,
+            child: CartItemImage(
+              controller: _controller2,
+              sizeAnimation: _sizeAnim,
+              colorAnimation: _colorAnima,
             ),
           ),
           // Draggable image on front
           Positioned(
             left: _leftPoint,
             top: _topPoint,
-            // width: 180,
-            // height: 180,
             child: GestureDetector(
               onPanEnd: _onPanEnd,
               onPanUpdate: (details) {

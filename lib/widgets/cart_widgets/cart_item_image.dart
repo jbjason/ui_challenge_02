@@ -17,9 +17,12 @@ class CartItemImage extends StatelessWidget {
     return AnimatedBuilder(
       animation: controller,
       builder: (context, _) {
-        return SizedBox(
+        return Container(
           width: sizeAnimation.value,
           height: sizeAnimation.value,
+          decoration: BoxDecoration(
+          border: Border.all(color: Colors.white),
+          ),
           child: Image.asset(
             MyImage.boxImg,
             color: colorAnimation.value,

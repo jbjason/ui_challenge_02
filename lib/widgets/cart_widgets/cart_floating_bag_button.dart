@@ -48,6 +48,11 @@ class CartFloatingBagButton extends StatelessWidget {
         clipBehavior: Clip.none,
         fit: StackFit.expand,
         children: [
+          // image bag open / clolse
+          percent < .5
+              ? Image.asset(MyImage.bagOpenImg, color: Colors.white, width: 45)
+              : Icon(CupertinoIcons.bag_fill, color: Colors.white, size: 45),
+          // animated count badge
           Positioned(
             top: lerpDouble(5, -15, countAnim),
             right: lerpDouble(15, -15, countAnim),
@@ -64,6 +69,7 @@ class CartFloatingBagButton extends StatelessWidget {
               ),
             ),
           ),
+          // static blue count badge
           if (count > 0)
             Positioned(
               top: -15,
@@ -78,10 +84,6 @@ class CartFloatingBagButton extends StatelessWidget {
                 ),
               ),
             ),
-
-          percent < .5
-              ? Image.asset(MyImage.bagOpenImg, color: Colors.white, width: 45)
-              : Icon(CupertinoIcons.bag_fill, color: Colors.white, size: 45),
         ],
       ),
     );
